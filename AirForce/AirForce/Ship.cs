@@ -20,7 +20,7 @@ public class Ship : FlyingObject
         HealthPoints = healthPoints;
     }
 
-    public static Ship CreateRandomShip(PointD location)
+    public static Ship CreateRandomShip(int limitX, int limitY)
     {
         Random random = new Random();
         int speedMultiplier;
@@ -56,6 +56,7 @@ public class Ship : FlyingObject
                 throw new ArgumentOutOfRangeException();
         }
         double speed = speedMultiplier + random.NextDouble();
+        PointD location = new PointD(limitX, random.NextDouble() * (limitY - height));
 
         return new Ship(location, shipType, speed, healthPoints, brush, width, height);
     }
