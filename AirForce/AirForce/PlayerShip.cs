@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace AirForce
 {
@@ -15,12 +9,12 @@ namespace AirForce
 
         public PlayerShip(PointD location, double speed, int healthPoints)
         {
-            width = 80;
-            height = 50;
-            this.Location = location;
+            Width = 80;
+            Height = 50;
+            Location = location;
             Speed = speed;
             HealthPoints = healthPoints;
-            brush = Brushes.CadetBlue;
+            Brush = Brushes.CadetBlue;
         }
     }
 }

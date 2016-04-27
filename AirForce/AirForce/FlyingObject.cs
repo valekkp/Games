@@ -1,18 +1,25 @@
 ﻿using System.Drawing;
-using System.Windows.Forms;
 
 namespace AirForce
 {
     public abstract class FlyingObject
     {
         public PointD Location;
-        public Brush brush;
-        public float width;
-        public float height;
+        protected Brush Brush;
+        public float Width;
+        public float Height;
+
+        protected PointD LocationCenter
+        {
+            get
+            {
+                return new PointD(Location.X + Width/2, Location.Y + Height/2);
+            }
+        }
 
         public void Draw(Graphics graphics)
         {
-            graphics.FillRectangle(brush, (float)Location.X, (float)Location.Y, width, height);
+            graphics.FillRectangle(Brush, (float)Location.X, (float)Location.Y, Width, Height);
         }
     }
 }

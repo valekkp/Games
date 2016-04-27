@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Drawing.Text;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 public enum ShipType
 {
-    Small,
+    //Small,
     Middle,
     Big
 }
@@ -22,10 +16,9 @@ namespace AirForce
     public partial class Form1 : Form
     {
         private List<Ship> ships = new List<Ship>();
-        private List<Bullets> bullets = new List<Bullets>(); 
+        private List<Bullet> bullets = new List<Bullet>(); 
         private PlayerShip playerShip;
-        Random random = new Random();
-        private bool checkShooting = false;
+        private bool checkShooting;
         private int shootDelay;
         private bool checkPressedUp;
         private bool checkPressedDown;
@@ -54,7 +47,7 @@ namespace AirForce
             {
                 ship.Draw(e.Graphics);
             }
-            foreach (Bullets bullet in bullets)
+            foreach (Bullet bullet in bullets)
             {
                 bullet.Draw(e.Graphics);
             }
@@ -67,11 +60,11 @@ namespace AirForce
             {
                 ship.Location.X -= (int)ship.Speed;
             }
-            foreach (Bullets bullet in bullets)
+            foreach (Bullet bullet in bullets)
             {
-                bullet.Location.X += Bullets.speed;
+                bullet.Location.X += bullet.Speed;
             }
-            ships.RemoveAll(ship => ship.Location.X <= 0);
+            ships.RemoveAll(ship => ship.Location.X <= -ship.Width);
             bullets.RemoveAll(bullet => bullet.Location.X >= pictureBox1.Width);
             pictureBox1.Refresh();
         }
@@ -80,7 +73,7 @@ namespace AirForce
         {
             if (checkPressedUp == false && checkPressedDown == false)
                 playerShip.Speed = 0;
-            if (playerShip.Location.Y + (float) playerShip.Speed < pictureBox1.Height - playerShip.height &&
+            if (playerShip.Location.Y + (float) playerShip.Speed < pictureBox1.Height - playerShip.Height &&
                 playerShip.Location.Y + (float) playerShip.Speed >= 0)
             {
                 playerShip.Location.Y += (float) playerShip.Speed;
@@ -90,16 +83,9 @@ namespace AirForce
 
         private void PlayerShoot()
         {
-            PointD currentPlayerLocation = new PointD(playerShip.Location.X + playerShip.width, playerShip.Location.Y + playerShip.height/2);
-            bullets.Add(Bullets.CreateBullet(currentPlayerLocation));
+            PointD currentPlayerLocation = new PointD(playerShip.Location.X + playerShip.Width, playerShip.Location.Y + playerShip.Height/2);
+            bullets.Add(Bullet.CreateBullet(currentPlayerLocation, false));
         }
-
-        //private PointD newCoordinates()
-        //{
-        //    int shipCoordinateX = random.Next(ClientSize.Width - 100, ClientSize.Width);
-        //    int shipCoordinateY = random.Next(0, ClientSize.Height);
-        //    return new PointD(shipCoordinateX, shipCoordinateY);
-        //}
 
         private void timer1_Tick(object sender, EventArgs e)
         {
@@ -122,11 +108,20 @@ namespace AirForce
             if (shootDelay > 10)
                 shootDelay = 0;
 
+            foreach (Ship ship in ships)
+            {
+                if(ship.Shoot(playerShip) != null && ship.ShootDelay == 0)
+                    bullets.Add(ship.Shoot(playerShip));
+                ship.ShootDelay++;
+                if (ship.ShootDelay > 40)
+                    ship.ShootDelay = 0;
+            }
+
         }
 
         private void timer2_Tick(object sender, EventArgs e)
         {
-            ships.Add(Ship.CreateRandomShip(pictureBox1.Width, pictureBox1.Height));
+            ships.Add(Ship.CreateRandomShip(pictureBox1.Size.Width, pictureBox1.Size.Height));
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -147,7 +142,7 @@ namespace AirForce
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode == Keys.Space)
+            if (e.KeyCode == Keys.Space)
                 checkShooting = false;
             if (e.KeyCode == Keys.Up)
             {
@@ -161,19 +156,19 @@ namespace AirForce
 
         private void CheckCollision()
         {
-            RectangleF playerRectangle = new RectangleF((float)playerShip.Location.X, (float)playerShip.Location.Y, playerShip.width, playerShip.height);
+            RectangleF playerRectangle = new RectangleF((float) playerShip.Location.X, (float) playerShip.Location.Y, playerShip.Width, playerShip.Height);
             foreach (Ship ship in ships)
             {
-                RectangleF shipRectangle = new RectangleF((float)ship.Location.X, (float)ship.Location.Y, ship.width, ship.height);
+                RectangleF shipRectangle = new RectangleF((float) ship.Location.X, (float) ship.Location.Y, ship.Width, ship.Height);
                 if (playerRectangle.IntersectsWith(shipRectangle) && ship.HealthPoints > 0)
                 {
                     playerShip.HealthPoints--;
                     playerHealthPointsLabel.Text = "HP: " + playerShip.HealthPoints;
                     ship.HealthPoints = 0;
                 }
-                foreach (Bullets bullet in bullets)
+                foreach (Bullet bullet in bullets.Where(bullet => !bullet.IsEnemyBullet))
                 {
-                    RectangleF bulletRectangle = new RectangleF((float)bullet.Location.X, (float)bullet.Location.Y, bullet.width, bullet.height);
+                    RectangleF bulletRectangle = new RectangleF((float) bullet.Location.X, (float) bullet.Location.Y, bullet.Width, bullet.Height);
                     if (shipRectangle.IntersectsWith(bulletRectangle) && ship.HealthPoints > 0)
                     {
                         ship.HealthPoints--;
@@ -182,12 +177,24 @@ namespace AirForce
                             killsAmount++;
                             KillsAmountLabel.Text = "Kills: " + killsAmount;
                         }
-                        bullet.used = true;
+                        bullet.Used = true;
                     }
                 }
-                bullets.RemoveAll(bulletInShip => bulletInShip.used);
+                //bullets.RemoveAll(bulletInShip => bulletInShip.used);
             }
             ships.RemoveAll(ship => ship.HealthPoints == 0);
+
+            foreach (Bullet bullet in bullets.Where(bullet => bullet.IsEnemyBullet))
+            {
+                RectangleF bulletRectangle = new RectangleF((float)bullet.Location.X, (float)bullet.Location.Y, bullet.Width, bullet.Height);
+                if (playerRectangle.IntersectsWith(bulletRectangle))
+                {
+                    playerShip.HealthPoints--;
+                    playerHealthPointsLabel.Text = "HP: " + playerShip.HealthPoints;
+                    bullet.Used = true;
+                }
+            }
+            bullets.RemoveAll(bulletInShip => bulletInShip.Used);
         }
 
         private void Restart()
