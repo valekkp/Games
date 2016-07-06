@@ -19,19 +19,16 @@ namespace Tetris
 
         private Point[] offsets;
 
-        public Figure(FigureType type, Point centerPosition)
+        public Figure(FigureType figureType, Point centerPosition)
         {
             position = centerPosition;
-            Console.WriteLine(position.X + " " + position.Y);
-            this.type = type;
+            type = figureType; //todo: check T type rotation
             switch (type)
             {
                 case FigureType.dot:
-                    position.Y--;
                     offsets = new[] {new Point(0, 0)};
                     break;
                 case FigureType.O:
-                    position.Y--;
                     offsets = new[] { new Point(-1, 0),
                                            new Point(0, 0),
                                            new Point(-1, 1),
@@ -50,7 +47,6 @@ namespace Tetris
                                            new Point(-1, 0) };
                     break;
                 case FigureType.T:
-                    position.Y--;
                     offsets = new[] { new Point(-1, 0),
                                            new Point(0, 0),
                                            new Point(1, 0),
@@ -102,9 +98,11 @@ namespace Tetris
                 variableX = 0;
                 variableY = 1;
             }
-            if(!(variableX == 0 && variableY == 0))
+            if (!(variableX == 0 && variableY == 0))
+            {
                 position.X += variableX;
                 position.Y += variableY;
+            }
         }
 
         public Point[] GetAbsoluteCoordinates()
@@ -112,6 +110,15 @@ namespace Tetris
             return offsets
                 .Select(o => new Point(position.X + o.X, position.Y + o.Y))
                 .ToArray();
+        }
+
+        public void SetOffsetsToFigure(Figure selectedFigure)
+        {
+            for (int i = 0; i < offsets.Length; i++)
+            {
+                this.offsets[i].X = selectedFigure.offsets[i].X;
+                this.offsets[i].Y = selectedFigure.offsets[i].Y;
+            }
         }
 
         public void Rotate()
@@ -149,6 +156,11 @@ namespace Tetris
                     }
                 }
             }
+        }
+
+        public Point[] getOffsets()
+        {
+            return offsets;
         }
     }
 }

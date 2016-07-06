@@ -29,6 +29,7 @@ namespace Tetris
 
         private Figure figure;
         private Figure nextFigure;
+        private Figure checkedFigure;
 
         private int score;
 
@@ -301,10 +302,12 @@ namespace Tetris
         {
             if (figure.type != FigureType.O && figure.type != FigureType.dot)
             {
-                Figure checkedFigure = new Figure(figure.type, figure.position);
+                checkedFigure = new Figure(figure.type, figure.position);
+                checkedFigure.SetOffsetsToFigure(figure);
                 checkedFigure.Rotate();
-                foreach (var check in checkedFigure.GetAbsoluteCoordinates())
+                foreach (Point check in checkedFigure.GetAbsoluteCoordinates())
                 {
+                    Console.WriteLine(check.X + " " + check.Y);
                     if (check.Y < 0 ||
                         check.Y >= CellsYMax ||
                         check.X < 0 ||
