@@ -55,6 +55,7 @@
             this.NextFigurePictureBox.Size = new System.Drawing.Size(130, 84);
             this.NextFigurePictureBox.TabIndex = 1;
             this.NextFigurePictureBox.TabStop = false;
+            this.NextFigurePictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.NextFigurePictureBox_Paint);
             // 
             // timer1
             // 

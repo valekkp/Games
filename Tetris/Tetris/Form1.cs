@@ -19,21 +19,25 @@ namespace Tetris
             Filled
         }
 
-        private const int CellSize = 30;
-        private const int CellsXMax = 10;
-        private const int CellsYMax = 20;
+        public const int CellSize = 30;
+        public const int CellsXMax = 10;
+        public const int CellsYMax = 20;
 
         private CellState[,] board = new CellState[CellsYMax, CellsXMax];
 
         private Random random = new Random();
 
         private Figure figure;
+        private Figure nextFigure;
 
-        public int Score;
+        private int score;
 
-        public string Direction;
+        private Direction movingDirection;
 
         private bool keyIsPressed;
+
+        private bool canMoveLeft;
+        private bool canMoveRight;
 
         public Form1()
         {
@@ -49,22 +53,24 @@ namespace Tetris
         {
             timer1.Stop();
             timer1.Interval = 1000;
-            Score = 0;
-            ScoreLabel.Text = "Score: " + Score;
+            score = 0;
+            ScoreLabel.Text = "Score: " + score;
             for (int i = 0; i < CellsYMax; i++)
             {
                 for (int j = 0; j < CellsXMax; j++)
                     board[i,j] = CellState.Empty;
             }
-            figure = CreateNewFigure();
+            figure = CreateNewFigure(new Point(CellsXMax / 2, 1), (FigureType)random.Next(0,8));
+            nextFigure = CreateNewFigure(new Point(1, 1), (FigureType)random.Next(0, 8));
+            movingDirection = Direction.None;
             timer1.Start();
         }
 
         private void SetSizes()
         {
-            int startingX = 10;
-            int startingY = 10;
-            int indent = 20; //Отступ
+            const int startingX = 10;
+            const int startingY = 10;
+            const int indent = 20; //Отступ
             BoardPictureBox.Location = new Point(startingX, startingY);
             BoardPictureBox.Size = new Size(CellSize * CellsXMax + 1, CellSize * CellsYMax + 1);
             NextFigurePictureBox.Location = new Point(BoardPictureBox.Width + startingX + indent, startingY);
@@ -89,11 +95,11 @@ namespace Tetris
         private void DrawFigure(Graphics graphics)
         {
             Brush figureBrush = Brushes.Blue;
-            for (int i = 0; i < figure.GetPartsCount(); i++)
+            foreach (Point position in figure.GetAbsoluteCoordinates())
             {
-                int Xcoord = figure.GetPoint(i).X * CellSize;
-                int Ycoord = figure.GetPoint(i).Y * CellSize;
-                graphics.FillRectangle(figureBrush, Xcoord + 1, Ycoord + 1, CellSize - 1, CellSize - 1);
+                int xcoord = position.X * CellSize;
+                int ycoord = position.Y * CellSize;
+                graphics.FillRectangle(figureBrush, xcoord + 1, ycoord + 1, CellSize - 1, CellSize - 1);
             }
             for (int i = 0; i < CellsYMax; i++)
             {
@@ -111,25 +117,26 @@ namespace Tetris
             DrawFigure(e.Graphics);
         }
 
-        private Figure CreateNewFigure()
+        private Figure CreateNewFigure(Point centerPosition, FigureType figureType)
         {
-            return new Figure((FigureType)random.Next(0, 8));
+             return new Figure(figureType, centerPosition);
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (CheckFallingDown())
                 figure.FallingDown();
-
             else
             {
-                for (int i = 0; i < figure.GetPartsCount(); i++)
+                foreach (Point position in figure.GetAbsoluteCoordinates())
                 {
-                    board[figure.GetPoint(i).Y, figure.GetPoint(i).X] = CellState.Filled;
+                    board[position.Y, position.X] = CellState.Filled;
                 }
                 CheckFullLines();
-                ScoreLabel.Text = "Score: " + Score;
-                figure = CreateNewFigure();
+                ScoreLabel.Text = "Score: " + score;
+                figure = CreateNewFigure(new Point(CellsXMax / 2, 1), nextFigure.type);
+                nextFigure = CreateNewFigure(new Point(1, 1), (FigureType)random.Next(0,8));
+                NextFigurePictureBox.Refresh();
                 if (CheckLostGame())
                 {
                     timer1.Stop();
@@ -142,9 +149,9 @@ namespace Tetris
 
         private bool CheckFallingDown()
         {
-            for (int i = 0; i < figure.GetPartsCount(); i++)
+            foreach (Point position in figure.GetAbsoluteCoordinates())
             {
-                if (figure.GetPoint(i).Y + 1 >= CellsYMax || board[figure.GetPoint(i).Y + 1, figure.GetPoint(i).X] == CellState.Filled)
+                if (position.Y + 1 >= CellsYMax || board[position.Y + 1, position.X] == CellState.Filled)
                     return false;
             }
             return true;
@@ -152,10 +159,7 @@ namespace Tetris
 
         private bool CheckLostGame()
         {
-            for (int i = 0; i < figure.GetPartsCount(); i++)
-                if (board[figure.GetPoint(i).Y, figure.GetPoint(i).X] == CellState.Filled)
-                    return true;
-            return false;
+            return figure.GetAbsoluteCoordinates().Any(position => board[position.Y, position.X] == CellState.Filled);
         }
 
         private void CheckFullLines()
@@ -168,7 +172,8 @@ namespace Tetris
                 {
                     if (board[i, j] == CellState.Filled)
                         count++;
-                    else break;
+                    else
+                        break;
                 }
                 if (count == CellsXMax)
                 {
@@ -179,32 +184,27 @@ namespace Tetris
             switch (linesDeleted)
             {
                 case 1:
-                    Score += 100;
+                    score += 100;
                     break;
                 case 2:
-                    Score += 300;
+                    score += 300;
                     break;
                 case 3:
-                    Score += 700;
+                    score += 700;
                     break;
                 case 4:
-                    Score += 1500;
+                    score += 1500;
                     break;
             }
         }
 
         private void DeleteLine(int index)
         {
-            for (int i = 0; i < CellsXMax; i++)
-            {
-                board[index, i] = CellState.Empty;
-            }
-            for (int i = index + 1; i < CellsYMax; i++)
+            for (int i = index; i > 0; i--)
             {
                 for (int j = 0; j < CellsXMax; j++)
                 {
-                    board[i - 1, j] = CellState.Filled;
-                    board[i, j] = CellState.Empty;
+                     board[i, j] = board[i - 1, j];
                 }
             }
         }
@@ -212,25 +212,111 @@ namespace Tetris
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Left)
-                Direction = "Left";
+                movingDirection = Direction.Left;
             if (e.KeyCode == Keys.Right)
-                Direction = "Right";
+                movingDirection = Direction.Right;
             if (e.KeyCode == Keys.Down)
-                Direction = "Down";
+                movingDirection = Direction.Down;
+            if (e.KeyCode == Keys.Up)
+            {
+                if (CheckRotation())
+                {
+                    figure.Rotate();
+                }
+            }
+            if(e.KeyCode == Keys.S)
+                timer1.Stop();
+            if(e.KeyCode == Keys.B)
+                timer1.Start();
             keyIsPressed = true;
         }
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
-            Direction = "None";
+            //if (e.KeyCode == Keys.Down)
+            //    timer1.Interval = 1000;
+            movingDirection = Direction.None;
             keyIsPressed = false;
         }
 
-        private void timer2_Tick(object sender, EventArgs e)
+        private void timer2_Tick(object sender, EventArgs e) //todo: Исправить дублирование
         {
-            if (Direction != "None" && figure.CheckMoving() && keyIsPressed)
-                figure.Move(Direction);
+            canMoveLeft = true;
+            canMoveRight = true;
+            if (movingDirection != Direction.None && keyIsPressed)
+            {
+                if (movingDirection == Direction.Left)
+                {
+                    foreach (Point position in figure.GetAbsoluteCoordinates())
+                    {
+                        if ((position.X - 1 < 0) || (board[position.Y, position.X - 1] == CellState.Filled))
+                        {
+                            canMoveLeft = false;
+                            break;
+                        }
+                    }
+                    if(canMoveLeft)
+                        figure.Move(movingDirection);
+                }
+
+                if (movingDirection == Direction.Right)
+                {
+                    foreach (Point position in figure.GetAbsoluteCoordinates())
+                    {
+                        if ((position.X + 1 > CellsXMax - 1) || (board[position.Y, position.X + 1] == CellState.Filled))
+                        {
+                            canMoveRight = false;
+                            break;
+                        }
+                    }
+                    if (canMoveRight)
+                        figure.Move(movingDirection);
+                }
+
+                if (movingDirection == Direction.Down)
+                {
+                    if (CheckFallingDown())
+                        figure.FallingDown();
+                        //timer1.Interval = 100;
+                }
+            }
             BoardPictureBox.Refresh();
+        }
+
+        private void NextFigurePictureBox_Paint(object sender, PaintEventArgs e)
+        {
+            DrawNextFigure(e.Graphics);
+        }
+
+        private void DrawNextFigure(Graphics graphics)
+        {
+            Brush figureBrush = Brushes.Blue;
+            foreach (Point position in nextFigure.GetAbsoluteCoordinates())
+            {
+                graphics.FillRectangle(figureBrush, position.X * CellSize + 1, position.Y * CellSize + 1, CellSize - 1, CellSize - 1);
+            }
+        }
+
+        private bool CheckRotation()
+        {
+            if (figure.type != FigureType.O && figure.type != FigureType.dot)
+            {
+                Figure checkedFigure = new Figure(figure.type, figure.position);
+                checkedFigure.Rotate();
+                foreach (var check in checkedFigure.GetAbsoluteCoordinates())
+                {
+                    if (check.Y < 0 ||
+                        check.Y >= CellsYMax ||
+                        check.X < 0 ||
+                        check.X >= CellsXMax ||
+                        board[check.Y, check.X] == CellState.Filled)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            else return false;
         }
     }
 }

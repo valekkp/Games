@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -10,131 +11,144 @@ namespace Tetris
 {
     public class Figure
     {
-        //private int coordinateX;
-        //private int coordinateY;
+        public Point position;
 
-        private List<int> coordinatesX = new List<int>();
-        private List<int> coordinatesY = new List<int>();
+        public FigureType type;
 
-        private static int CellsXMax = 10;
-        private static int CellsYMax = 20;
+        private int rotateNumber;
 
-        private static int XCenter = CellsXMax / 2;
-        private FigureType figureType;
+        private Point[] offsets;
 
-        public Figure(FigureType type)
+        public Figure(FigureType type, Point centerPosition)
         {
-            //Console.WriteLine("Test");
+            position = centerPosition;
+            Console.WriteLine(position.X + " " + position.Y);
+            this.type = type;
             switch (type)
             {
                 case FigureType.dot:
-                    Console.WriteLine("dot: ");
-                    coordinatesX.Add(CellsXMax / 2);
-                    coordinatesY.Add(0);
+                    position.Y--;
+                    offsets = new[] {new Point(0, 0)};
                     break;
                 case FigureType.O:
-                    Console.WriteLine("O: ");
-                    coordinatesX.AddRange(new [] { XCenter - 1, XCenter, XCenter - 1, XCenter });
-                    coordinatesY.AddRange(new [] { 0, 0, 1, 1 });
+                    position.Y--;
+                    offsets = new[] { new Point(-1, 0),
+                                           new Point(0, 0),
+                                           new Point(-1, 1),
+                                           new Point(0, 1) };
                     break;
                 case FigureType.Z:
-                    Console.WriteLine("Z: ");
-                    coordinatesX.AddRange(new [] { XCenter - 1, XCenter, XCenter, XCenter + 1 });
-                    coordinatesY.AddRange(new [] { 0, 0, 1, 1 });
+                    offsets = new[] { new Point(-1, -1),
+                                           new Point(0, -1),
+                                           new Point(0, 0),
+                                           new Point(1, 0) };
                     break;
                 case FigureType.S:
-                    Console.WriteLine("S: ");
-                    coordinatesX.AddRange(new[] { XCenter, XCenter + 1, XCenter - 1, XCenter });
-                    coordinatesY.AddRange(new[] { 0, 0, 1, 1 });
+                    offsets = new[] { new Point(1, -1),
+                                           new Point(0, -1),
+                                           new Point(0, 0),
+                                           new Point(-1, 0) };
                     break;
                 case FigureType.T:
-                    Console.WriteLine("T: ");
-                    coordinatesX.AddRange(new[] { XCenter - 1, XCenter, XCenter + 1, XCenter });
-                    coordinatesY.AddRange(new[] { 0, 0, 0, 1 });
+                    position.Y--;
+                    offsets = new[] { new Point(-1, 0),
+                                           new Point(0, 0),
+                                           new Point(1, 0),
+                                           new Point(0, 1) };
                     break;
                 case FigureType.L:
-                    Console.WriteLine("L: ");
-                    coordinatesX.AddRange(new[] { XCenter, XCenter, XCenter, XCenter + 1 });
-                    coordinatesY.AddRange(new[] { 0, 1, 2, 2 });
+                    offsets = new[] { new Point(0, -1),
+                                           new Point(0, 0),
+                                           new Point(0, 1),
+                                           new Point(1, 1) };
                     break;
                 case FigureType.J:
-                    Console.WriteLine("J: ");
-                    coordinatesX.AddRange(new[] { XCenter, XCenter, XCenter - 1, XCenter });
-                    coordinatesY.AddRange(new[] { 0, 1, 2, 2 });
+                    offsets = new[] { new Point(0, -1),
+                                           new Point(0, 0),
+                                           new Point(0, 1),
+                                           new Point(-1, 1) };
                     break;
                 case FigureType.I:
-                    Console.WriteLine("I: ");
-                    coordinatesX.AddRange(new[] { XCenter, XCenter, XCenter, XCenter });
-                    coordinatesY.AddRange(new[] { 0, 1, 2, 3 });
+                    offsets = new[] { new Point(0, -1),
+                                           new Point(0, 0),
+                                           new Point(0, 1),
+                                           new Point(0, 2) };
                     break;
             }
-            Console.WriteLine("X: " + coordinatesX.Count);
-            Console.WriteLine("Y: " + coordinatesY.Count);
         }
 
         public void FallingDown()
         {
-            for(int i = 0; i < GetPartsCount(); i++)
-            {
-                coordinatesY[i]++;
-            }
+            position.Y++;
         }
 
-        public void Move(string direction)
+        public void Move(Direction direction)
         {
             int variableX = 0;
             int variableY = 0;
 
-            if (direction == "Left")
+            if (direction == Direction.Left)
             {
                 variableX = -1;
                 variableY = 0;
             }
-            if (direction == "Right")
+            if (direction == Direction.Right)
             {
                 variableX = 1;
                 variableY = 0;
             }
-            if (direction == "Down")
+            if (direction == Direction.Down)
             {
                 variableX = 0;
                 variableY = 1;
             }
             if(!(variableX == 0 && variableY == 0))
-                for (int i = 0; i < GetPartsCount(); i++)
-                    {
-                        coordinatesX[i] += variableX;
-                        coordinatesY[i] += variableY;
-                    }
+                position.X += variableX;
+                position.Y += variableY;
         }
 
-        public void DeleteCoordinates()
+        public Point[] GetAbsoluteCoordinates()
         {
-            coordinatesX.Clear();
-            coordinatesY.Clear();
+            return offsets
+                .Select(o => new Point(position.X + o.X, position.Y + o.Y))
+                .ToArray();
         }
 
-        public Point GetPoint(int index)
+        public void Rotate()
         {
-            return new Point(coordinatesX[index], coordinatesY[index]);
-        }
-
-        public int GetPartsCount()
-        {
-            return coordinatesX.Count;
-        }
-
-        public bool CheckMoving()
-        {
-            for (int i = 0; i < GetPartsCount(); i++)
+            if (type != FigureType.O && type != FigureType.dot)
             {
-                if (!(GetPoint(i).X - 1 >= 0 &&
-                      GetPoint(i).X + 1 <= CellsXMax &&
-                      GetPoint(i).Y - 1 >= 0 &&
-                      GetPoint(i).Y + 1 <= CellsYMax))
-                    return false;
+                int temp;
+                if(type == FigureType.J || type == FigureType.L || type == FigureType.T)
+                for (int i = 0; i < offsets.Length; i++)
+                {
+                    temp = offsets[i].X;
+                    offsets[i].X = -offsets[i].Y;
+                    offsets[i].Y = temp;
+                }
+                if (type == FigureType.S || type == FigureType.Z || type == FigureType.I)
+                {
+                    rotateNumber++;
+                    if (rotateNumber%2 == 1)
+                    {
+                        for (int i = 0; i < offsets.Length; i++)
+                        {
+                            temp = offsets[i].X;
+                            offsets[i].X = -offsets[i].Y;
+                            offsets[i].Y = temp;
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < offsets.Length; i++)
+                        {
+                            temp = offsets[i].X;
+                            offsets[i].X = offsets[i].Y;
+                            offsets[i].Y = -temp;
+                        }
+                    }
+                }
             }
-            return true;
         }
     }
 }
