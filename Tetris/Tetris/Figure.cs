@@ -11,7 +11,7 @@ namespace Tetris
 {
     public class Figure
     {
-        public Point position;
+        public Point Position;
 
         public FigureType type;
 
@@ -21,11 +21,11 @@ namespace Tetris
 
         public Figure(FigureType figureType, Point centerPosition)
         {
-            position = centerPosition;
-            type = figureType; //todo: check T type rotation
+            Position = centerPosition;
+            type = figureType;
             switch (type)
             {
-                case FigureType.dot:
+                case FigureType.Dot:
                     offsets = new[] {new Point(0, 0)};
                     break;
                 case FigureType.O:
@@ -65,17 +65,17 @@ namespace Tetris
                                            new Point(-1, 1) };
                     break;
                 case FigureType.I:
-                    offsets = new[] { new Point(0, -1),
+                    offsets = new[] { new Point(-1, 0),
                                            new Point(0, 0),
-                                           new Point(0, 1),
-                                           new Point(0, 2) };
+                                           new Point(1, 0),
+                                           new Point(2, 0) };
                     break;
             }
         }
 
-        public void FallingDown()
+        public void FallDown()
         {
-            position.Y++;
+            Position.Y++;
         }
 
         public void Move(Direction direction)
@@ -100,15 +100,15 @@ namespace Tetris
             }
             if (!(variableX == 0 && variableY == 0))
             {
-                position.X += variableX;
-                position.Y += variableY;
+                Position.X += variableX;
+                Position.Y += variableY;
             }
         }
 
         public Point[] GetAbsoluteCoordinates()
         {
             return offsets
-                .Select(o => new Point(position.X + o.X, position.Y + o.Y))
+                .Select(o => new Point(Position.X + o.X, Position.Y + o.Y))
                 .ToArray();
         }
 
@@ -123,20 +123,20 @@ namespace Tetris
 
         public void Rotate()
         {
-            if (type != FigureType.O && type != FigureType.dot)
+            if (type != FigureType.O && type != FigureType.Dot)
             {
                 int temp;
                 if(type == FigureType.J || type == FigureType.L || type == FigureType.T)
-                for (int i = 0; i < offsets.Length; i++)
-                {
-                    temp = offsets[i].X;
-                    offsets[i].X = -offsets[i].Y;
-                    offsets[i].Y = temp;
-                }
-                if (type == FigureType.S || type == FigureType.Z || type == FigureType.I)
+                    for (int i = 0; i < offsets.Length; i++)
+                    {
+                        temp = offsets[i].X;
+                        offsets[i].X = -offsets[i].Y;
+                        offsets[i].Y = temp;
+                    }
+                if (type == FigureType.S || type == FigureType.Z)
                 {
                     rotateNumber++;
-                    if (rotateNumber%2 == 1)
+                    if (rotateNumber % 2 == 1)
                     {
                         for (int i = 0; i < offsets.Length; i++)
                         {
@@ -155,10 +155,19 @@ namespace Tetris
                         }
                     }
                 }
+                if (type == FigureType.I)
+                {
+                    for (int i = 0; i < offsets.Length; i++)
+                    {
+                        temp = offsets[i].X;
+                        offsets[i].X = offsets[i].Y;
+                        offsets[i].Y = temp;
+                    }
+                }
             }
         }
 
-        public Point[] getOffsets()
+        public Point[] GetOffsets()
         {
             return offsets;
         }

@@ -15,6 +15,6 @@ namespace Tetris
         S,
         Z,
         T,
-        dot
+        Dot
     }
 }

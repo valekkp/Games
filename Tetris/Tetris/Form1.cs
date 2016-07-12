@@ -126,7 +126,7 @@ namespace Tetris
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (CheckFallingDown())
-                figure.FallingDown();
+                figure.FallDown();
             else
             {
                 foreach (Point position in figure.GetAbsoluteCoordinates())
@@ -210,7 +210,7 @@ namespace Tetris
             }
         }
 
-        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        private void Form1_KeyDown(object sender, KeyEventArgs e) // todo: fix keys pressing, make them work properly
         {
             if (e.KeyCode == Keys.Left)
                 movingDirection = Direction.Left;
@@ -225,10 +225,10 @@ namespace Tetris
                     figure.Rotate();
                 }
             }
-            if(e.KeyCode == Keys.S)
-                timer1.Stop();
-            if(e.KeyCode == Keys.B)
-                timer1.Start();
+            if(e.KeyCode == Keys.Space)
+                while(CheckFallingDown())
+                    figure.FallDown();
+                    
             keyIsPressed = true;
         }
 
@@ -253,7 +253,7 @@ namespace Tetris
                         if ((position.X - 1 < 0) || (board[position.Y, position.X - 1] == CellState.Filled))
                         {
                             canMoveLeft = false;
-                            break;
+                                break;
                         }
                     }
                     if(canMoveLeft)
@@ -267,19 +267,15 @@ namespace Tetris
                         if ((position.X + 1 > CellsXMax - 1) || (board[position.Y, position.X + 1] == CellState.Filled))
                         {
                             canMoveRight = false;
-                            break;
+                                break;
                         }
                     }
                     if (canMoveRight)
                         figure.Move(movingDirection);
                 }
 
-                if (movingDirection == Direction.Down)
-                {
-                    if (CheckFallingDown())
-                        figure.FallingDown();
-                        //timer1.Interval = 100;
-                }
+                if (movingDirection == Direction.Down && CheckFallingDown())
+                    figure.FallDown();
             }
             BoardPictureBox.Refresh();
         }
@@ -300,14 +296,13 @@ namespace Tetris
 
         private bool CheckRotation()
         {
-            if (figure.type != FigureType.O && figure.type != FigureType.dot)
+            if (figure.type != FigureType.O && figure.type != FigureType.Dot)
             {
-                checkedFigure = new Figure(figure.type, figure.position);
+                checkedFigure = new Figure(figure.type, figure.Position);
                 checkedFigure.SetOffsetsToFigure(figure);
                 checkedFigure.Rotate();
                 foreach (Point check in checkedFigure.GetAbsoluteCoordinates())
                 {
-                    Console.WriteLine(check.X + " " + check.Y);
                     if (check.Y < 0 ||
                         check.Y >= CellsYMax ||
                         check.X < 0 ||
