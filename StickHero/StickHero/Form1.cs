@@ -26,22 +26,28 @@ namespace StickHero
         const int ClientWidth = 600;
         const int ClientHeight = 600;
 
-        const int HeroWidth = 30;
+        const int HeroWidth = 50;
         const int HeroHeight = 50;
         const int StickWidth = 10;
+        const int minWidth = HeroWidth + StickWidth + OffsetBeforeStick;
+        const int maxWidth = 180;
 
         const int OffsetBeforeStick = 10;
 
         const int DoubleScorePlatformWidth = 15;
         const int DoubleScorePlatformHeight = 5;
 
-        const int GameSpeed = 3;
+        const int GameSpeed = 4;
         
         private Pen stickPen = new Pen(Color.DarkBlue, StickWidth);
         private Brush heroBrush = Brushes.Brown;
         private Brush platformBrush = Brushes.Black;
         private Brush doubleScoreBrush = Brushes.Red;
         private Brush scoreBrush = Brushes.Crimson;
+
+        private Image heroImage = Properties.Resources.Hero;
+
+        private LinearGradientBrush gradiendBackground;
 
         private Platform heroPlatform;
         private Platform anotherPlatform;
@@ -50,8 +56,6 @@ namespace StickHero
 
         private int heroXCoord;
         private int heroYCoord;
-        private Point heroPositionOnPlatform;
-        private Point heroStartingPositionOnPlatform;
 
         private int stickLength = 0;
         private int stickXOffset = 0;
@@ -64,6 +68,9 @@ namespace StickHero
         private bool isPressed = false;
         private bool isStickOnPlatform;
         private bool isStickOnDoubleScorePlatform;
+        private bool isStarted = false;
+
+        private string startMessage = "Press and hold SPACE to grow stick, release to drop it";
         
         private GameState gameState;
 
@@ -77,6 +84,7 @@ namespace StickHero
         {
             heroPlatform = new Platform(100, 100, 0, ClientHeight - 100);
             SetElementsParameters();
+            gradiendBackground = new LinearGradientBrush(new Point(0, 0), new Point(PlayingBoardPictureBox.Width, PlayingBoardPictureBox.Height), Color.White, Color.DodgerBlue);
             timer.Interval = 1;
             Restart();
             timer.Start();
@@ -87,12 +95,15 @@ namespace StickHero
         {
             PlayingBoardPictureBox.Location = new Point(0, 0);
             PlayingBoardPictureBox.Size = new Size(ClientWidth, ClientHeight);
+            
             ClientSize = new Size(ClientWidth, ClientHeight);
             DesktopLocation = new Point(0, 0);
         }
 
         private void DrawElements(Graphics graphics)
         {
+            graphics.FillRectangle(gradiendBackground, 0, 0, PlayingBoardPictureBox.Width, PlayingBoardPictureBox.Height);
+
             graphics.FillRectangle(platformBrush, 
                                     heroPlatform.Position.X, anotherPlatform.Position.Y, 
                                     heroPlatform.Width, heroPlatform.Height);
@@ -101,9 +112,7 @@ namespace StickHero
                                     anotherPlatform.Position.X, anotherPlatform.Position.Y,
                                     anotherPlatform.Width, heroPlatform.Height);
 
-            graphics.FillRectangle(heroBrush,
-                                heroXCoord, heroYCoord,
-                                HeroWidth, HeroHeight);
+            graphics.DrawImage(heroImage, heroXCoord, heroYCoord, HeroWidth, HeroHeight);
 
             graphics.FillRectangle(doubleScoreBrush,
                                     doubleScorePlatform.Position.X, doubleScorePlatform.Position.Y,
@@ -111,7 +120,10 @@ namespace StickHero
 
             graphics.DrawLine(stickPen, startingStickPoint, endStickPoint);
 
-            graphics.DrawString(score.ToString(), new Font(FontFamily.GenericMonospace, 40), scoreBrush, PlayingBoardPictureBox.Width/2 - 20, 50);
+            if(isStarted)
+                graphics.DrawString(score.ToString(), new Font(FontFamily.GenericMonospace, 40), scoreBrush, PlayingBoardPictureBox.Width/2 - 20, 50);
+            else
+                graphics.DrawString(startMessage, new Font(FontFamily.GenericMonospace, 12), scoreBrush, 20, 50);
         }
 
         private void PlayingBoardPictureBox_Paint(object sender, PaintEventArgs e)
@@ -154,7 +166,7 @@ namespace StickHero
             }
         }
 
-        private void DropStick() //todo: Рефакторинг, если возможно
+        private void DropStick()
         {
             stickXOffset += GameSpeed;
             if (stickXOffset >= stickLength)
@@ -164,25 +176,28 @@ namespace StickHero
             }
             endStickPoint.X = startingStickPoint.X + stickXOffset;
             endStickPoint.Y = startingStickPoint.Y - (int)Sqrt(Pow(stickLength, 2) - Pow(stickXOffset, 2));
-            if (endStickPoint.X >= anotherPlatform.Position.X && 
-                endStickPoint.X <= anotherPlatform.Position.X + anotherPlatform.Width)
+
+            if (CheckOnPlatform(anotherPlatform))
                 isStickOnPlatform = true;
             else
-            {
                 isStickOnPlatform = false;
-            }
-            if (endStickPoint.X >= doubleScorePlatform.Position.X &&
-                endStickPoint.X <= doubleScorePlatform.Position.X + doubleScorePlatform.Width)
+
+            if (CheckOnPlatform(doubleScorePlatform))
                 isStickOnDoubleScorePlatform = true;
             else
-            {
                 isStickOnDoubleScorePlatform = false;
-            }
         }
 
-        private void MoveHero() //todo: Рефакторинг кода, если возможно
+        private bool CheckOnPlatform(Platform platform)
+        {
+            return endStickPoint.X >= platform.Position.X &&
+                   endStickPoint.X <= platform.Position.X + platform.Width;
+        }
+
+        private void MoveHero()
         {
             heroXCoord += GameSpeed;
+            MoveOnStick();
             if (!isStickOnPlatform &&
                 heroXCoord >= heroPlatform.Position.X + heroPlatform.Width)
             {
@@ -191,30 +206,37 @@ namespace StickHero
             }
             if (isStickOnPlatform)
             {
-                // Путь по палке
-                if (heroXCoord > startingStickPoint.X - HeroWidth && heroXCoord < anotherPlatform.Position.X)
-                    heroYCoord = heroPlatform.Position.Y - StickWidth/2 - HeroHeight;
-                else
-                    heroYCoord = heroPlatform.Position.Y - HeroHeight;
-
                 if (heroXCoord >= anotherPlatform.Position.X)
                     DeleteStick();
 
-                if (heroXCoord >=
-                    anotherPlatform.Position.X + anotherPlatform.Width - HeroWidth - StickWidth - OffsetBeforeStick)
-                {
-                    while (heroXCoord >
-                           anotherPlatform.Position.X + anotherPlatform.Width - HeroWidth - StickWidth -
-                           OffsetBeforeStick)
-                        heroXCoord--;
-                    gameState = GameState.BoardMoving;
-                    score++;
-                    if (isStickOnDoubleScorePlatform)
-                        score++;
-                    isStickOnPlatform = false;
-                    isStickOnDoubleScorePlatform = false;
-                }
+                CheckHeroEndPoint();
             }
+        }
+
+        private void CheckHeroEndPoint()
+        {
+            if (heroXCoord >=
+                    anotherPlatform.Position.X + anotherPlatform.Width - HeroWidth - StickWidth - OffsetBeforeStick)
+            {
+                while (heroXCoord >
+                       anotherPlatform.Position.X + anotherPlatform.Width - HeroWidth - StickWidth -
+                       OffsetBeforeStick)
+                    heroXCoord--;
+                gameState = GameState.BoardMoving;
+                score++;
+                if (isStickOnDoubleScorePlatform)
+                    score++;
+                isStickOnPlatform = false;
+                isStickOnDoubleScorePlatform = false;
+            }
+        }
+
+        private void MoveOnStick()
+        {
+            if (heroXCoord > startingStickPoint.X - HeroWidth && heroXCoord < anotherPlatform.Position.X)
+                heroYCoord = heroPlatform.Position.Y - StickWidth / 2 - HeroHeight;
+            else
+                heroYCoord = heroPlatform.Position.Y - HeroHeight;
         }
 
         private void DeleteStick()
@@ -276,7 +298,7 @@ namespace StickHero
             if(isHeroPlatformChanged)
                 heroPlatform = new Platform(anotherPlatform.Width, anotherPlatform.Height,
                                             anotherPlatform.Position.X, anotherPlatform.Position.Y);
-            int randomWidth = random.Next(50, 151);
+            int randomWidth = random.Next(minWidth, maxWidth);
             anotherPlatform = new Platform(randomWidth, heroPlatform.Height,
                                     random.Next(heroPlatform.Position.X + heroPlatform.Width + 10, ClientWidth - randomWidth), ClientHeight - heroPlatform.Height);
             doubleScorePlatform = new Platform(DoubleScorePlatformWidth, DoubleScorePlatformHeight, 
@@ -290,6 +312,8 @@ namespace StickHero
         {
             if (e.KeyCode == Keys.Space && gameState == GameState.Waiting)
             {
+                if (!isStarted)
+                    isStarted = true;
                 if (!isPressed)
                     isPressed = true;
             }
@@ -297,7 +321,7 @@ namespace StickHero
 
         private void GameForm_KeyUp(object sender, KeyEventArgs e)
         {
-            if (gameState == GameState.Waiting)
+            if (gameState == GameState.Waiting && e.KeyCode == Keys.Space)
             {
                 gameState = GameState.StickFalling;
                 isPressed = false;
