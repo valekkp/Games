@@ -28,9 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.GamePictureBox = new System.Windows.Forms.PictureBox();
             this.LocksOpenedLabel = new System.Windows.Forms.Label();
             this.LockpicksBroken = new System.Windows.Forms.Label();
+            this.timer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.GamePictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -42,6 +44,7 @@
             this.GamePictureBox.TabIndex = 0;
             this.GamePictureBox.TabStop = false;
             this.GamePictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.GamePictureBox_Paint);
+            this.GamePictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.GamePictureBox_MouseMove);
             // 
             // LocksOpenedLabel
             // 
@@ -63,6 +66,10 @@
             this.LockpicksBroken.TabIndex = 2;
             this.LockpicksBroken.Text = "label2";
             // 
+            // timer
+            // 
+            this.timer.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // GameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -73,6 +80,8 @@
             this.Controls.Add(this.GamePictureBox);
             this.Name = "GameForm";
             this.Text = "Lock Picking";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GameForm_KeyDown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.GameForm_KeyUp);
             ((System.ComponentModel.ISupportInitialize)(this.GamePictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -84,6 +93,7 @@
         private System.Windows.Forms.PictureBox GamePictureBox;
         private System.Windows.Forms.Label LocksOpenedLabel;
         private System.Windows.Forms.Label LockpicksBroken;
+        private System.Windows.Forms.Timer timer;
     }
 }
 
