@@ -15,7 +15,6 @@ namespace Lock_Picking
         private const int PenWidth = 2;
         private const int ScrewdriverPenWidth = 2;
         private static Pen lockPen = new Pen(Color.Black, PenWidth);
-        //private static Pen sectorPen = new Pen(Color.Chartreuse, PenWidth);
         private static Pen lockpickPen = new Pen(Color.Gray, PenWidth);
         private static Pen scredriverPen = new Pen(Color.Gray, ScrewdriverPenWidth);
 
@@ -30,31 +29,22 @@ namespace Lock_Picking
         private Lockpick lockpick;
         private Screwdriver screwdriver;
 
-        private double minAngle;
-        private double maxAngle;
-
         public void DrawElements(Graphics graphics)
         {
             graphics.DrawEllipse(lockPen, CenterPosition.X - LockSize/2, CenterPosition.Y - LockSize/2, LockSize, LockSize);
 
             graphics.DrawLine(lockpickPen, Lockpick.StartingLocation, lockpick.EndingLocation);
 
-            //graphics.DrawLine(sectorPen, Lockpick.StartingLocation.X, Lockpick.StartingLocation.Y,
-            //    Lockpick.StartingLocation.X + (float)Cos(minAngle) * Lockpick.Length,
-            //    Lockpick.StartingLocation.Y + (float)Sin(minAngle) * Lockpick.Length);
-
-            //graphics.DrawLine(sectorPen, Lockpick.StartingLocation.X, Lockpick.StartingLocation.Y,
-            //    Lockpick.StartingLocation.X + (float)Cos(maxAngle) * Lockpick.Length,
-            //    Lockpick.StartingLocation.Y + (float)Sin(maxAngle) * Lockpick.Length);
-
             graphics.DrawLine(scredriverPen, Screwdriver.StartingLocation, screwdriver.EndingLocation);
         }
 
         public void Start()
         {
-            minAngle = random.NextDouble()*-PI;
-            maxAngle = minAngle + random.NextDouble() * (-PI - minAngle);
-            currentLock = new Lock(minAngle, maxAngle);
+            Cursor.Hide();
+            //Cursor.Position = GameForm.CursorLocation;
+            Console.WriteLine("Starting location X: " + Cursor.Position.X);
+            Console.WriteLine("Starting location Y: " + Cursor.Position.Y);
+            currentLock = new Lock();
             lockpick = new Lockpick();
             screwdriver = new Screwdriver();
         }
@@ -85,7 +75,7 @@ namespace Lock_Picking
             }
             if (isTurning)
             {
-                if (lockpick.angle <= minAngle && lockpick.angle >= maxAngle)
+                if (lockpick.angle <= currentLock.MinOpeningAngle && lockpick.angle >= currentLock.MaxOpeningAngle)
                     screwdriver.Turn();
                 else
                 {

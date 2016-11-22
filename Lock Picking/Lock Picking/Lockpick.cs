@@ -38,6 +38,7 @@ namespace Lock_Picking
 
         public void Move(int x, int y)
         {
+            Console.WriteLine(x);
             if (x > cursorLastPosition.X && angle < 0)
             {
                 angle += (float)PI/180;
@@ -46,10 +47,10 @@ namespace Lock_Picking
             {
                 angle -= (float)PI/180;
             }
-            EndingLocation.X = StartingLocation.X + (float)Cos(angle) * Length;
-            EndingLocation.Y = StartingLocation.Y + (float)Sin(angle) * Length;
             cursorLastPosition.X = x;
             cursorLastPosition.Y = y;
+            EndingLocation.X = StartingLocation.X + (float)Cos(angle) * Length;
+            EndingLocation.Y = StartingLocation.Y + (float)Sin(angle) * Length;
         }
     }
 }

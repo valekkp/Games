@@ -14,6 +14,7 @@ namespace Lock_Picking
     {
         Game game = new Game();
         private bool isSpacePressed = false;
+        public static Point CursorLocation = new Point(200, 200);
 
         public GameForm()
         {
@@ -43,6 +44,7 @@ namespace Lock_Picking
         private void GamePictureBox_MouseMove(object sender, MouseEventArgs e)
         {
             game.MoveLockpick(e.Location.X, e.Location.Y);
+           // Cursor.Position = CursorLocation;
             GamePictureBox.Refresh();
         }
 
@@ -52,6 +54,8 @@ namespace Lock_Picking
             {
                 isSpacePressed = true;
             }
+            if (e.KeyCode == Keys.Escape)
+                Close();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
