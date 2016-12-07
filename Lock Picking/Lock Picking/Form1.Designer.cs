@@ -1,6 +1,6 @@
 ﻿namespace Lock_Picking
 {
-    partial class GameForm
+    partial class Form1
     {
         /// <summary>
         /// Обязательная переменная конструктора.
@@ -29,60 +29,61 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.GamePictureBox = new System.Windows.Forms.PictureBox();
+            this.PlayingBoard = new System.Windows.Forms.PictureBox();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.LocksOpenedLabel = new System.Windows.Forms.Label();
-            this.LockpicksBroken = new System.Windows.Forms.Label();
-            this.timer = new System.Windows.Forms.Timer(this.components);
-            ((System.ComponentModel.ISupportInitialize)(this.GamePictureBox)).BeginInit();
+            this.LockpicksUsedLabel = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.PlayingBoard)).BeginInit();
             this.SuspendLayout();
             // 
-            // GamePictureBox
+            // PlayingBoard
             // 
-            this.GamePictureBox.Location = new System.Drawing.Point(8, 8);
-            this.GamePictureBox.Name = "GamePictureBox";
-            this.GamePictureBox.Size = new System.Drawing.Size(265, 244);
-            this.GamePictureBox.TabIndex = 0;
-            this.GamePictureBox.TabStop = false;
-            this.GamePictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.GamePictureBox_Paint);
-            this.GamePictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.GamePictureBox_MouseMove);
+            this.PlayingBoard.Location = new System.Drawing.Point(0, 0);
+            this.PlayingBoard.Name = "PlayingBoard";
+            this.PlayingBoard.Size = new System.Drawing.Size(400, 400);
+            this.PlayingBoard.TabIndex = 0;
+            this.PlayingBoard.TabStop = false;
+            this.PlayingBoard.Paint += new System.Windows.Forms.PaintEventHandler(this.PlayingBoard_Paint);
+            this.PlayingBoard.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PlayingBoard_MouseMove);
+            // 
+            // timer1
+            // 
+            this.timer1.Interval = 4;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // LocksOpenedLabel
             // 
             this.LocksOpenedLabel.AutoSize = true;
-            this.LocksOpenedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.LocksOpenedLabel.Location = new System.Drawing.Point(12, 269);
+            this.LocksOpenedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.LocksOpenedLabel.Location = new System.Drawing.Point(420, 84);
             this.LocksOpenedLabel.Name = "LocksOpenedLabel";
-            this.LocksOpenedLabel.Size = new System.Drawing.Size(66, 24);
+            this.LocksOpenedLabel.Size = new System.Drawing.Size(163, 25);
             this.LocksOpenedLabel.TabIndex = 1;
-            this.LocksOpenedLabel.Text = "label1";
+            this.LocksOpenedLabel.Text = "Locks Opened";
             // 
-            // LockpicksBroken
+            // LockpicksUsedLabel
             // 
-            this.LockpicksBroken.AutoSize = true;
-            this.LockpicksBroken.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.LockpicksBroken.Location = new System.Drawing.Point(136, 269);
-            this.LockpicksBroken.Name = "LockpicksBroken";
-            this.LockpicksBroken.Size = new System.Drawing.Size(66, 24);
-            this.LockpicksBroken.TabIndex = 2;
-            this.LockpicksBroken.Text = "label2";
+            this.LockpicksUsedLabel.AutoSize = true;
+            this.LockpicksUsedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.LockpicksUsedLabel.Location = new System.Drawing.Point(420, 187);
+            this.LockpicksUsedLabel.Name = "LockpicksUsedLabel";
+            this.LockpicksUsedLabel.Size = new System.Drawing.Size(178, 25);
+            this.LockpicksUsedLabel.TabIndex = 1;
+            this.LockpicksUsedLabel.Text = "Lockpicks Used";
             // 
-            // timer
-            // 
-            this.timer.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // GameForm
+            // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(316, 319);
-            this.Controls.Add(this.LockpicksBroken);
+            this.ClientSize = new System.Drawing.Size(794, 410);
+            this.Controls.Add(this.LockpicksUsedLabel);
             this.Controls.Add(this.LocksOpenedLabel);
-            this.Controls.Add(this.GamePictureBox);
-            this.Name = "GameForm";
-            this.Text = "Lock Picking";
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GameForm_KeyDown);
-            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.GameForm_KeyUp);
-            ((System.ComponentModel.ISupportInitialize)(this.GamePictureBox)).EndInit();
+            this.Controls.Add(this.PlayingBoard);
+            this.Name = "Form1";
+            this.Text = "Lockpicking";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
+            ((System.ComponentModel.ISupportInitialize)(this.PlayingBoard)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -90,10 +91,10 @@
 
         #endregion
 
-        private System.Windows.Forms.PictureBox GamePictureBox;
+        private System.Windows.Forms.PictureBox PlayingBoard;
+        private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Label LocksOpenedLabel;
-        private System.Windows.Forms.Label LockpicksBroken;
-        private System.Windows.Forms.Timer timer;
+        private System.Windows.Forms.Label LockpicksUsedLabel;
     }
 }
 

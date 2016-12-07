@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D92A8177-8179-4085-95DA-A47ED061A814}</ProjectGuid>
+    <ProjectGuid>{096DA544-9031-4580-AB9B-2AB92F984828}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Lock_Picking</RootNamespace>

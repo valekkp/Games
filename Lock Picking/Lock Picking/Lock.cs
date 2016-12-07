@@ -3,30 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Math;
 
 namespace Lock_Picking
 {
     class Lock
     {
-        public double MinOpeningAngle;
-        public double MaxOpeningAngle;
+        public enum Type
+        {
+            Easy,
+            Normal,
+            Hard
+        }
 
-        public double MinAngle;
-        public double MaxAngle;
-
-        private Random random = new Random();
+        Random random = new Random();
+        public int InnerSectorMin;
+        public int InnerSectorMax;
+        public int OuterSectorMin;
+        public int OuterSectorMax;
+        public Type Difficulty = Type.Easy;
 
         public Lock()
         {
-            while(MinAngle - MaxAngle < 10*PI/180)
-            {
-                MinAngle = random.NextDouble() * -PI;
-                MaxAngle = MinOpeningAngle + random.NextDouble() * (-PI - MinOpeningAngle);
-            }
-            MinOpeningAngle = MinAngle - (MinAngle - MaxAngle) * 0.4;
-            MaxOpeningAngle = MaxAngle + (MinAngle - MaxAngle) * 0.4;
+            InnerSectorMin = random.Next(20, 155);
+            InnerSectorMax = random.Next(InnerSectorMin, 160);
+            OuterSectorMin = InnerSectorMin - 20;
+            OuterSectorMax = InnerSectorMax + 20;
+            if(InnerSectorMax - InnerSectorMin < 25)
+                Difficulty = Type.Normal;
+            if (InnerSectorMax - InnerSectorMin < 10)
+                Difficulty = Type.Hard;
         }
-
     }
 }

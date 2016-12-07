@@ -10,66 +10,91 @@ using System.Windows.Forms;
 
 namespace Lock_Picking
 {
-    public partial class GameForm : Form
+    public partial class Form1 : Form
     {
+        public const int BoardLength = 500;
+        public const int LockOffset = 50;
         Game game = new Game();
-        private bool isSpacePressed = false;
-        public static Point CursorLocation = new Point(200, 200);
+        private bool screwdriverIsMoving = false;
+        private int cooldown = 0;
+        private int score = 0;
+        private int lockpicksUsed = 0;
+        private bool screwdriverPartialMoving = false;
 
-        public GameForm()
+        public Form1()
         {
             InitializeComponent();
-            SetElementParameters();
             game.Start();
-            //GamePictureBox.Refresh();
+            PlayingBoard.Refresh();
+            LockpicksUsedLabel.Text = "Lockpicks used: 0";
+            LocksOpenedLabel.Text = "Locks opened: 0";
         }
 
-        private void SetElementParameters()
+        private void SetParameters()
         {
-            GamePictureBox.Location = new Point(0, 0);
-            GamePictureBox.Size = new Size(2 * Game.CenterPosition.X, 2 * Game.CenterPosition.Y);
-            LocksOpenedLabel.Location = new Point(50, GamePictureBox.ClientSize.Height);
-            LockpicksBroken.Location = new Point(LocksOpenedLabel.Size.Width + 50, GamePictureBox.ClientSize.Height);
-            ClientSize = new Size(2 * Game.CenterPosition.X, 2 * Game.CenterPosition.Y + LockpicksBroken.Height + LocksOpenedLabel.Height + 20);
-            LockpicksBroken.Location = new Point(LocksOpenedLabel.Location.X, LocksOpenedLabel.Location.Y + LocksOpenedLabel.Height);
-            timer.Interval = 10;
-            timer.Start();
+            PlayingBoard.Location = new Point(0,0);
+            PlayingBoard.Size = new Size(BoardLength, BoardLength);
         }
 
-        private void GamePictureBox_Paint(object sender, PaintEventArgs e)
+        public void PlayingBoard_Paint(object sender, PaintEventArgs e)
         {
-            game.DrawElements(e.Graphics);
+            Graphics graphics = e.Graphics;
+            Pen lockPen = new Pen(Color.Brown);
+            graphics.DrawEllipse(lockPen, LockOffset, LockOffset, BoardLength / 2, BoardLength / 2);
+            Pen linePen = new Pen(Color.Brown);
+            graphics.DrawLine(linePen, LockOffset, LockOffset + BoardLength / 4, BoardLength / 2 + LockOffset, LockOffset + BoardLength / 4);
+            game.GetLockpick().Draw(e.Graphics);
+            game.GetScrewdriver().Draw(e.Graphics);
+            timer1.Start();
         }
 
-        private void GamePictureBox_MouseMove(object sender, MouseEventArgs e)
+        private void PlayingBoard_MouseMove(object sender, MouseEventArgs e)
         {
-            game.MoveLockpick(e.Location.X, e.Location.Y);
-           // Cursor.Position = CursorLocation;
-            GamePictureBox.Refresh();
+            game.MoveLockpick(e.Location);
+            PlayingBoard.Refresh();
         }
 
-        private void GameForm_KeyDown(object sender, KeyEventArgs e)
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Space)
             {
-                isSpacePressed = true;
+                screwdriverIsMoving = true;
             }
-            if (e.KeyCode == Keys.Escape)
-                Close();
+        }
+
+        private void Form1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Space)
+            {
+                screwdriverIsMoving = false;
+            }
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            game.MoveScrewdriver(isSpacePressed);
-            GamePictureBox.Refresh();
-            LockpicksBroken.Text = "Lockpicks broken: " + game.lockpicksUsed.ToString();
-            LocksOpenedLabel.Text = "Locks opened: " + game.locksOpened.ToString();
-        }
+            if (screwdriverIsMoving)
+                game.GetScrewdriver().Move(game.GetLockpick(), game.GetLock());
+            else
+            {
+                game.GetScrewdriver().Return();
+                game.GetLockpick().CurrentColor = Color.Green;
+            }
 
-        private void GameForm_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Space)
-                isSpacePressed = false;
+            if (game.CheckLockpickDurability())
+            {
+                game.NewLockpick();
+                lockpicksUsed++;
+                LockpicksUsedLabel.Text = "Lockpicks used: " + lockpicksUsed;
+            }
+
+            if (game.CheckLockState())
+            {
+                game.NewScrewdriverAndLock();
+                score++;
+                LocksOpenedLabel.Text = "Locks opened: " + score;
+            }
+
+            PlayingBoard.Refresh();
         }
     }
 }
