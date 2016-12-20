@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,6 +33,14 @@ namespace Lock_Picking
                 Difficulty = Type.Normal;
             if (InnerSectorMax - InnerSectorMin < 10)
                 Difficulty = Type.Hard;
+        }
+
+        public void Draw(Graphics graphics)
+        {
+            Pen lockPen = new Pen(Color.Brown);
+            graphics.DrawEllipse(lockPen, Form1.LockOffset, Form1.LockOffset, Form1.BoardLength / 2, Form1.BoardLength / 2);
+            Pen linePen = new Pen(Color.Brown);
+            graphics.DrawLine(linePen, Form1.LockOffset, Form1.LockOffset + Form1.BoardLength / 4, Form1.BoardLength / 2 + Form1.LockOffset, Form1.LockOffset + Form1.BoardLength / 4);
         }
     }
 }

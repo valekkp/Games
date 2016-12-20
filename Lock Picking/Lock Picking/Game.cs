@@ -26,19 +26,11 @@ namespace Lock_Picking
             lockpick.Move(location);
         }
 
-        public Lockpick GetLockpick()
+        public void DrawElements(Graphics graphics)
         {
-            return lockpick;
-        }
-
-        public Screwdriver GetScrewdriver()
-        {
-            return screwdriver;
-        }
-
-        public Lock GetLock()
-        {
-            return currentLock;
+            lockpick.Draw(graphics);
+            currentLock.Draw(graphics);
+            screwdriver.Draw(graphics);
         }
 
         public void NewScrewdriverAndLock()
@@ -60,6 +52,17 @@ namespace Lock_Picking
         public bool CheckLockpickDurability()
         {
             return lockpick.Durability == 0;
+        }
+
+        public void MoveScrewdriver()
+        {
+            screwdriver.Move(lockpick, currentLock);
+        }
+
+        public void ReturnScrewdriver()
+        {
+            screwdriver.Return();
+            lockpick.CurrentColor = Color.Green;
         }
     }
 }

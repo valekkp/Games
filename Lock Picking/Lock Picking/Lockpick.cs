@@ -16,8 +16,7 @@ namespace Lock_Picking
         private const int Length = Form1.BoardLength/2;
         private Point startingLocation = new Point(Form1.LockOffset + Form1.BoardLength / 4, Form1.LockOffset + Form1.BoardLength / 4);
         private PointF endingLocation;
-        private float sin;
-        private float cos;
+
         public float Angle;
         public Color CurrentColor = Color.Green;
 
@@ -29,6 +28,8 @@ namespace Lock_Picking
 
         public void Move(Point mouseLocation)
         {
+            float sin;
+            float cos;
             if (mouseLocation.Y < Form1.LockOffset + Form1.BoardLength/4)
             {
                 cos = (float)((mouseLocation.X - startingLocation.X)/

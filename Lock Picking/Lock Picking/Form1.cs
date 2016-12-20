@@ -16,14 +16,13 @@ namespace Lock_Picking
         public const int LockOffset = 50;
         Game game = new Game();
         private bool screwdriverIsMoving = false;
-        private int cooldown = 0;
         private int score = 0;
         private int lockpicksUsed = 0;
-        private bool screwdriverPartialMoving = false;
 
         public Form1()
         {
             InitializeComponent();
+            SetParameters();
             game.Start();
             PlayingBoard.Refresh();
             LockpicksUsedLabel.Text = "Lockpicks used: 0";
@@ -34,18 +33,12 @@ namespace Lock_Picking
         {
             PlayingBoard.Location = new Point(0,0);
             PlayingBoard.Size = new Size(BoardLength, BoardLength);
+            timer1.Start();
         }
 
-        public void PlayingBoard_Paint(object sender, PaintEventArgs e)
+        private void PlayingBoard_Paint(object sender, PaintEventArgs e)
         {
-            Graphics graphics = e.Graphics;
-            Pen lockPen = new Pen(Color.Brown);
-            graphics.DrawEllipse(lockPen, LockOffset, LockOffset, BoardLength / 2, BoardLength / 2);
-            Pen linePen = new Pen(Color.Brown);
-            graphics.DrawLine(linePen, LockOffset, LockOffset + BoardLength / 4, BoardLength / 2 + LockOffset, LockOffset + BoardLength / 4);
-            game.GetLockpick().Draw(e.Graphics);
-            game.GetScrewdriver().Draw(e.Graphics);
-            timer1.Start();
+            game.DrawElements(e.Graphics);
         }
 
         private void PlayingBoard_MouseMove(object sender, MouseEventArgs e)
@@ -73,11 +66,10 @@ namespace Lock_Picking
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (screwdriverIsMoving)
-                game.GetScrewdriver().Move(game.GetLockpick(), game.GetLock());
+                game.MoveScrewdriver();
             else
             {
-                game.GetScrewdriver().Return();
-                game.GetLockpick().CurrentColor = Color.Green;
+                game.ReturnScrewdriver();
             }
 
             if (game.CheckLockpickDurability())
