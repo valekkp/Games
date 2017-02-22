@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Drawing;
+using System.Drawing.Drawing2D;
+
 
 namespace StickHero
 {
@@ -21,5 +17,16 @@ namespace StickHero
             Position.X = xCoord;
             Position.Y = yCoord;
         }
+
+        public void Draw(Graphics graphics, Brush brush)
+        {
+            graphics.SmoothingMode = SmoothingMode.HighQuality;
+            Brush platformBrush = brush;
+
+            graphics.FillRectangle(platformBrush,
+                                    Position.X, Position.Y,
+                                    Width, Height);
+        }
+
     }
 }
