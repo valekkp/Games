@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using static System.Math;
 
 namespace StickHero
 {
@@ -10,22 +9,21 @@ namespace StickHero
 
         private Image heroImage = Properties.Resources.Hero;
 
-        public int XCoord;
-        public int YCoord;
+        public Point Position;
 
         public void Draw(Graphics graphics)
         {
-            graphics.DrawImage(heroImage, XCoord, YCoord, Width, Height);
+            graphics.DrawImage(heroImage, Position.X, Position.Y, Width, Height);
         }
 
         public void Move()
         {
-            XCoord += Game.GameSpeed;
+            Position.X += Game.GameSpeed;
         }
 
         public void Drop()
         {
-            YCoord += Game.GameSpeed;
+            Position.Y += Game.GameSpeed;
         }
     }
 }

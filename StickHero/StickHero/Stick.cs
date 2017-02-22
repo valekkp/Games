@@ -1,17 +1,16 @@
 ﻿using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Windows.Forms;
 using static System.Math;
 
 namespace StickHero
 {
     class Stick
     {
-        public const int MaxLength = GameForm.ClientWidth - Game.playingHeight;
+        public const int MaxLength = GameForm.ClientWidth - Game.PlayingHeight;
 
         public const int Width = 10;
 
-        public int length = 0;
+        public int Length;
 
         public Point StartingPoint;
         public Point EndingPoint;
@@ -41,6 +40,18 @@ namespace StickHero
             angle = value;
         }
 
+        private int growingSpeed = 10;
+        public void Grow()
+        {
+            EndingPoint.Y -= growingSpeed;
+
+            Length = StartingPoint.Y - EndingPoint.Y;
+            if (Length >= MaxLength)
+            {
+                Length = MaxLength;
+            }
+        }
+
         private int fallingSpeed = 2;
         public void Drop()
         {
@@ -49,19 +60,8 @@ namespace StickHero
             {
                 angle = 0;
             }
-            EndingPoint.X = (int)(StartingPoint.X + length * Cos(angle*PI/180));
-            EndingPoint.Y = (int)(StartingPoint.Y + length * Sin(angle*PI/180));
-        }
-
-        public void Grow()
-        {
-            EndingPoint.Y -= Game.GameSpeed;
-
-            length = StartingPoint.Y - EndingPoint.Y;
-            if (length >= MaxLength)
-            {
-                length = MaxLength;
-            }
+            EndingPoint.X = (int)(StartingPoint.X + Length * Cos(angle*PI/180));
+            EndingPoint.Y = (int)(StartingPoint.Y + Length * Sin(angle*PI/180));
         }
 
         public bool IsOnPlatform(Platform platform)

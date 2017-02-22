@@ -5,10 +5,10 @@ namespace StickHero
 {
     class Game
     {
-        public const int minWidth = Hero.Width + Stick.Width + GameForm.OffsetBeforeStick;
-        public const int maxWidth = 180;
+        private const int MinWidth = Hero.Width + Stick.Width + GameForm.OffsetBeforeStick;
+        private const int MaxWidth = 180;
 
-        public const int playingHeight = 100;
+        public const int PlayingHeight = 100;
 
         private const int DoubleScorePlatformWidth = 15;
         private const int DoubleScorePlatformHeight = 5;
@@ -24,9 +24,9 @@ namespace StickHero
 
         public const int GameSpeed = 10;
 
-        private GameState State;
+        private GameState state;
 
-        int randomWidth = new Random().Next(minWidth, maxWidth);
+        private int randomWidth = new Random().Next(MinWidth, MaxWidth);
 
         private Platform heroPlatform;
         private Platform anotherPlatform;
@@ -56,7 +56,7 @@ namespace StickHero
         public void Start()
         {
             Random random = new Random();
-            heroPlatform = new Platform(100, playingHeight, 0, GameForm.ClientHeight - playingHeight);
+            heroPlatform = new Platform(100, PlayingHeight, 0, GameForm.ClientHeight - PlayingHeight);
             anotherPlatform = new Platform(randomWidth, heroPlatform.Height,
                                            random.Next(heroPlatform.Position.X + heroPlatform.Width + 10, 
                                                        GameForm.ClientWidth - randomWidth), 
@@ -69,15 +69,15 @@ namespace StickHero
 
         public void Restart()
         {
-            State = GameState.Waiting;
+            state = GameState.Waiting;
             SetScore(0);
             stick = new Stick();
             stick.SetAngle(-90);
             CreateNewPlatform();
-            hero.XCoord = heroPlatform.Position.X + heroPlatform.Width - Hero.Width - Stick.Width - GameForm.OffsetBeforeStick;
-            hero.YCoord = GameForm.ClientHeight - heroPlatform.Height - Hero.Height;
-            stick.StartingPoint = new Point(hero.XCoord + Hero.Width + GameForm.OffsetBeforeStick, hero.YCoord + Hero.Height);
-            stick.EndingPoint = new Point(hero.XCoord + Hero.Width + GameForm.OffsetBeforeStick, hero.YCoord + Hero.Height);
+            hero.Position.X = heroPlatform.Position.X + heroPlatform.Width - Hero.Width - Stick.Width - GameForm.OffsetBeforeStick;
+            hero.Position.Y = GameForm.ClientHeight - heroPlatform.Height - Hero.Height;
+            stick.StartingPoint = new Point(hero.Position.X + Hero.Width + GameForm.OffsetBeforeStick, hero.Position.Y + Hero.Height);
+            stick.EndingPoint = new Point(hero.Position.X + Hero.Width + GameForm.OffsetBeforeStick, hero.Position.Y + Hero.Height);
         }
 
         private int score;
@@ -92,11 +92,11 @@ namespace StickHero
 
         public GameState GetState()
         {
-            return State;
+            return state;
         }
-        public void SetState(GameState state)
+        public void SetState(GameState newState)
         {
-            State = state;
+            state = newState;
         }
 
         public Hero GetHero()
@@ -115,8 +115,8 @@ namespace StickHero
                                     random.Next(heroPlatform.Position.X + heroPlatform.Width + 10, GameForm.ClientWidth - randomWidth), GameForm.ClientHeight - heroPlatform.Height);
             doubleScorePlatform = new Platform(DoubleScorePlatformWidth, DoubleScorePlatformHeight,
                                     anotherPlatform.Position.X + anotherPlatform.Width / 2 - DoubleScorePlatformWidth / 2, anotherPlatform.Position.Y);
-            stick.StartingPoint = new Point(hero.XCoord + Hero.Width + GameForm.OffsetBeforeStick, hero.YCoord + Hero.Height);
-            stick.EndingPoint = new Point(hero.XCoord + Hero.Width + GameForm.OffsetBeforeStick, hero.YCoord + Hero.Height);
+            stick.StartingPoint = new Point(hero.Position.X + Hero.Width + GameForm.OffsetBeforeStick, hero.Position.Y + Hero.Height);
+            stick.EndingPoint = new Point(hero.Position.X + Hero.Width + GameForm.OffsetBeforeStick, hero.Position.Y + Hero.Height);
             stick.SetAngle(-90);
         }
 
@@ -124,22 +124,22 @@ namespace StickHero
         {
             hero.Move();
             // Movement on a stick
-            if (hero.XCoord > GetStick().StartingPoint.X - Hero.Width && hero.XCoord < GetStick().EndingPoint.X)
-                hero.YCoord = GetHeroPlatform().Position.Y - Stick.Width / 2 - Hero.Height;
+            if (hero.Position.X > GetStick().StartingPoint.X - Hero.Width && hero.Position.X < GetStick().EndingPoint.X)
+                hero.Position.Y = GetHeroPlatform().Position.Y - Stick.Width / 2 - Hero.Height;
             else
-                hero.YCoord = GetHeroPlatform().Position.Y - Hero.Height;
+                hero.Position.Y = GetHeroPlatform().Position.Y - Hero.Height;
 
             if (!GetStick().IsOnPlatform(GetAnotherPlatform()) &&
-                hero.XCoord >= GetHeroPlatform().Position.X + GetHeroPlatform().Width
-                && hero.XCoord < GetAnotherPlatform().Position.X)
+                hero.Position.X >= GetHeroPlatform().Position.X + GetHeroPlatform().Width
+                && hero.Position.X < GetAnotherPlatform().Position.X)
             {
-                hero.XCoord = GetHeroPlatform().Position.X + GetHeroPlatform().Width;
-                SetState(Game.GameState.HeroFalling);
+                hero.Position.X = GetHeroPlatform().Position.X + GetHeroPlatform().Width;
+                SetState(GameState.HeroFalling);
             }
 
             if (GetStick().IsOnPlatform(GetAnotherPlatform()))
             {
-                if (hero.XCoord >= GetAnotherPlatform().Position.X)
+                if (hero.Position.X >= GetAnotherPlatform().Position.X)
                     GetStick().Delete();
 
                 CheckHeroEndPoint();
@@ -148,24 +148,24 @@ namespace StickHero
 
         private void CheckHeroEndPoint()
         {
-            if (hero.XCoord >= GetAnotherPlatform().Position.X + GetAnotherPlatform().Width - Hero.Width - Stick.Width - GameForm.OffsetBeforeStick)
+            if (hero.Position.X >= GetAnotherPlatform().Position.X + GetAnotherPlatform().Width - Hero.Width - Stick.Width - GameForm.OffsetBeforeStick)
             {
-                hero.XCoord = GetAnotherPlatform().Position.X + GetAnotherPlatform().Width - Hero.Width - Stick.Width - GameForm.OffsetBeforeStick;
-                SetState(Game.GameState.BoardMoving);
+                hero.Position.X = GetAnotherPlatform().Position.X + GetAnotherPlatform().Width - Hero.Width - Stick.Width - GameForm.OffsetBeforeStick;
+                SetState(GameState.BoardMoving);
             }
         }
 
         public void MoveBoard()
         {
-            hero.XCoord -= GameSpeed;
+            hero.Position.X -= GameSpeed;
             heroPlatform.Position.X -= GameSpeed;
             anotherPlatform.Position.X -= GameSpeed;
             doubleScorePlatform.Position.X -= GameSpeed;
-            if (hero.XCoord <= 50)
+            if (hero.Position.X <= 50)
             {
-                while (hero.XCoord < 50)
+                while (hero.Position.X < 50)
                 {
-                    hero.XCoord++;
+                    hero.Position.X++;
                     heroPlatform.Position.X++;
                     anotherPlatform.Position.X++;
                     doubleScorePlatform.Position.X++;

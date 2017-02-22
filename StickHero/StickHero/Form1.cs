@@ -11,18 +11,10 @@ namespace StickHero
         public const int ClientHeight = 600;
         
         public const int OffsetBeforeStick = 10;
-        
-        private Brush doubleScoreBrush = Brushes.Red;
+
         private Brush scoreBrush = Brushes.Crimson;
 
-        private Random random = new Random();
-
-        public bool isPressed = false;
-        private bool isStickOnPlatform;
-        private bool isStickOnDoubleScorePlatform;
-        private bool isStarted = false;
-
-        private string startMessage = "Press and hold SPACE to grow stick, release to drop it";
+        //private string startMessage = "Press and hold SPACE to grow stick, release to drop it";
         
         private Game game = new Game();
 
@@ -47,22 +39,31 @@ namespace StickHero
             DesktopLocation = new Point(0, 0);
         }
 
-        private void DrawElements(Graphics graphics)
-        {
-            LinearGradientBrush gradiendBackground = new LinearGradientBrush(new Point(0, 0), new Point(PlayingBoardPictureBox.Width, PlayingBoardPictureBox.Height), Color.White, Color.DodgerBlue);
-            graphics.FillRectangle(gradiendBackground, 0, 0, PlayingBoardPictureBox.Width, PlayingBoardPictureBox.Height);
-
-                graphics.DrawString(game.GetScore().ToString(), new Font(FontFamily.GenericMonospace, 40), scoreBrush, PlayingBoardPictureBox.Width/2 - 20, 50);
-        }
-
         private void PlayingBoardPictureBox_Paint(object sender, PaintEventArgs e)
         {
             DrawElements(e.Graphics);
-            game.GetStick().Draw(e.Graphics);
-            game.GetHero().Draw(e.Graphics);
-            game.GetHeroPlatform().Draw(e.Graphics, Brushes.Black);
-            game.GetAnotherPlatform().Draw(e.Graphics, Brushes.Black);
-            game.GetDoubleScorePlatform().Draw(e.Graphics, Brushes.Red);
+        }
+
+        private Brush platformBrush = Brushes.Black;
+        private Brush doubleScoreBrush = Brushes.Red;
+
+        private void DrawElements(Graphics graphics)
+        {
+            graphics.SmoothingMode = SmoothingMode.HighQuality;
+
+            Point point1 = new Point(0, 0);
+            Point point2 = new Point(PlayingBoardPictureBox.Width, PlayingBoardPictureBox.Height);
+            LinearGradientBrush gradiendBackground = new LinearGradientBrush(point1, point2, Color.White, Color.DodgerBlue);
+
+            graphics.FillRectangle(gradiendBackground, 0, 0, PlayingBoardPictureBox.Width, PlayingBoardPictureBox.Height);
+
+            graphics.DrawString(game.GetScore().ToString(), new Font(FontFamily.GenericMonospace, 40), scoreBrush, PlayingBoardPictureBox.Width/2 - 20, 50);
+
+            game.GetStick().Draw(graphics);
+            game.GetHero().Draw(graphics);
+            game.GetHeroPlatform().Draw(graphics, platformBrush);
+            game.GetAnotherPlatform().Draw(graphics, platformBrush);
+            game.GetDoubleScorePlatform().Draw(graphics, doubleScoreBrush);
         }
 
         private void timer_Tick(object sender, EventArgs e)
@@ -70,64 +71,70 @@ namespace StickHero
             switch (game.GetState())
             {
                 case Game.GameState.Waiting:
-
-                    Console.WriteLine("WAITING");
-                    if (growStick && game.GetState() == Game.GameState.Waiting)
-                        game.GetStick().Grow();
-                    if(game.GetStick().length == Stick.MaxLength)
-                        game.SetState(Game.GameState.StickFalling);
+                    GrowStick();
                     break;
-
                 case Game.GameState.StickFalling:
-
-                    Console.WriteLine("STICKFALLING");
-                    game.GetStick().Drop();
-                    if (game.GetStick().GetAngle() == 0)
-                    {
-                        if(game.GetStick().IsOnPlatform(game.GetDoubleScorePlatform()))
-                            game.SetScore(game.GetScore() + 1);
-                        if(game.GetStick().IsOnPlatform(game.GetAnotherPlatform()))
-                            game.SetScore(game.GetScore() + 1);
-                        game.SetState(Game.GameState.HeroMoving);
-                    }
-
+                    DropStick();
                     break;
-
                 case Game.GameState.HeroMoving:
-
-                    Console.WriteLine("MOVINGHERO: " + game.GetHero().XCoord);
-                    game.MoveHero();
-                        
-                    if (game.GetHero().XCoord >= game.GetAnotherPlatform().Position.X + game.GetAnotherPlatform().Width - Stick.Width - Hero.Width - GameForm.OffsetBeforeStick)
-                    {
-                        game.SetState(Game.GameState.BoardMoving);
-                    }
+                    MoveHero();
                     break;
-
                 case Game.GameState.BoardMoving:
-
-                    Console.WriteLine("BOARDMOVING");
                     game.MoveBoard();
                     break;
-
                 case Game.GameState.HeroFalling:
-
-                    Console.WriteLine("HEROFALLING");
-                    game.GetHero().Drop();
-                    if (game.GetHero().YCoord >= GameForm.ClientHeight)
-                        game.Restart();
+                    DropHero();
                     break;
             }
             PlayingBoardPictureBox.Refresh();
         }
 
+        private void GrowStick()
+        {
+            if (isStickGrowing && game.GetState() == Game.GameState.Waiting)
+                game.GetStick().Grow();
+            if (game.GetStick().Length == Stick.MaxLength)
+                game.SetState(Game.GameState.StickFalling);
+        }
 
-        private bool growStick = false;
+        private void DropStick()
+        {
+            game.GetStick().Drop();
+            if (game.GetStick().GetAngle() == 0)
+            {
+                if (game.GetStick().IsOnPlatform(game.GetDoubleScorePlatform()))
+                    game.SetScore(game.GetScore() + 1);
+                if (game.GetStick().IsOnPlatform(game.GetAnotherPlatform()))
+                    game.SetScore(game.GetScore() + 1);
+                game.SetState(Game.GameState.HeroMoving);
+            }
+        }
+
+        private void MoveHero()
+        {
+            game.MoveHero();
+
+            Platform platform = game.GetAnotherPlatform();
+            int expectedPosition = platform.Position.X + platform.Width - Stick.Width - Hero.Width - OffsetBeforeStick;
+            if (game.GetHero().Position.X >= expectedPosition)
+            {
+                game.SetState(Game.GameState.BoardMoving);
+            }
+        }
+
+        private void DropHero()
+        {
+            game.GetHero().Drop();
+            if (game.GetHero().Position.Y >= ClientHeight)
+                game.Restart();
+        }
+
+        private bool isStickGrowing;
         private void GameForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Space)
             {
-                growStick = true;
+                isStickGrowing = true;
             }
         }
 
@@ -137,7 +144,7 @@ namespace StickHero
             {
                 if(game.GetState() == Game.GameState.Waiting)
                     game.SetState(Game.GameState.StickFalling);
-                growStick = false;
+                isStickGrowing = false;
             }
         }
     }
