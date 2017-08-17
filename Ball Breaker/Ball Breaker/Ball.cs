@@ -12,7 +12,7 @@ namespace Ball_Breaker
 {
     class Ball
     {
-        enum Colors
+        public enum Colors
         {
             Green,
             Blue,
@@ -39,22 +39,21 @@ namespace Ball_Breaker
             position.Y = positionY;
         }
 
-        public string GetColor()
+        public Colors GetColor()
         {
-            return color.ToString();
+            return color;
         }
 
-        
+        static Random random = new Random();
         public void SetRandomColor()
         {
-            Random random = new Random();
             color = (Colors) random.Next(0, 5);
         }
 
         public void Draw(Graphics graphics)
         {
             graphics.SmoothingMode = SmoothingMode.HighQuality;
-            graphics.FillEllipse(brushColors[color], new Rectangle(Form1.Offset*position.X + 3*position.X, Form1.Offset*position.Y + 3 * position.Y, Form1.Offset, Form1.Offset));
+            graphics.FillEllipse(brushColors[color], new Rectangle(Form1.Offset + (Form1.BallSize + 3)*position.X, Form1.Offset + (Form1.BallSize + 3)*position.Y, Form1.BallSize, Form1.BallSize));
         }
     }
 }

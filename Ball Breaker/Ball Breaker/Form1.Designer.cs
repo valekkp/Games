@@ -40,6 +40,7 @@
             this.GameBoard.TabIndex = 0;
             this.GameBoard.TabStop = false;
             this.GameBoard.Paint += new System.Windows.Forms.PaintEventHandler(this.GameBoard_Paint);
+            this.GameBoard.MouseMove += new System.Windows.Forms.MouseEventHandler(this.GameBoard_MouseMove);
             // 
             // Form1
             // 

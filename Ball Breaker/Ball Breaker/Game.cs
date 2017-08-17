@@ -12,9 +12,9 @@ namespace Ball_Breaker
 
         private BallsGroup balls = new BallsGroup();
 
-        void Start()
+        public void Start()
         {
-            
+            balls.GenerateBalls();
         }
 
         public BallsGroup GetBallsGroup()
