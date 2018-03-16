@@ -4,10 +4,25 @@ namespace AirForce
 {
     public abstract class FlyingObject
     {
-        public PointD Location;
+        private readonly float mWidth;
+        private readonly float mHeight;
+
         protected Brush Brush;
-        public float Width;
-        public float Height;
+
+        public PointD Location
+        {
+            get; private set;
+        }
+
+        public float Width
+        {
+            get { return mWidth; }
+        }
+
+        public float Height
+        {
+            get { return mHeight; }
+        }
 
         protected PointD LocationCenter
         {
