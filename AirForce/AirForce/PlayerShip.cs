@@ -1,20 +1,27 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace AirForce
 {
     public class PlayerShip : FlyingObject
     {
-        public double Speed;
-        public int HealthPoints;
+        private readonly Size mSize = new Size(50, 30);
+        private readonly Brush mBrush = Brushes.DarkGoldenrod;
+        private readonly int mSpeed = 2;
+        private readonly int mHealthPoints = 3;
 
-        public PlayerShip(PointD location, double speed, int healthPoints)
+        public PlayerShip(Size gameFieldSize)
         {
-            Width = 80;
-            Height = 50;
-            Location = location;
-            Speed = speed;
-            HealthPoints = healthPoints;
-            Brush = Brushes.CadetBlue;
+            Random random = new Random();
+            Speed = mSpeed;
+            HealthPoints = mHealthPoints;
+            Brush = mBrush;
+            Position = new Point(gameFieldSize.Width + mSize.Width / 2, mSize.Height / 2 + random.Next(gameFieldSize.Height - mSize.Height / 2));
+        }
+
+        public override void MakeAction()
+        {
+
         }
     }
 }

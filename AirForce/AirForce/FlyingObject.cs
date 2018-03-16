@@ -4,37 +4,26 @@ namespace AirForce
 {
     public abstract class FlyingObject
     {
-        private readonly float mWidth;
-        private readonly float mHeight;
+        protected Brush Brush { get; set; }
 
-        protected Brush Brush;
+        protected Point Position { get; set; }
 
-        public PointD Location
-        {
-            get; private set;
-        }
+        protected Size Size { get; set; }
 
-        public float Width
-        {
-            get { return mWidth; }
-        }
+        protected int Speed { get; set; }
 
-        public float Height
-        {
-            get { return mHeight; }
-        }
-
-        protected PointD LocationCenter
-        {
-            get
-            {
-                return new PointD(Location.X + Width/2, Location.Y + Height/2);
-            }
-        }
+        protected int HealthPoints { get; set; }
 
         public void Draw(Graphics graphics)
         {
-            graphics.FillRectangle(Brush, (float)Location.X, (float)Location.Y, Width, Height);
+            graphics.FillEllipse(Brush, Position.X - Size.Width / 2, Position.Y - Size.Height / 2, Size.Width, Size.Height);
         }
+
+        public void Move()
+        {
+            Position = new Point(Position.X - Speed, Position.Y);
+        }
+
+        public abstract void MakeAction();
     }
 }
