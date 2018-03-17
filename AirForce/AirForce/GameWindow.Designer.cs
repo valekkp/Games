@@ -73,8 +73,6 @@
             this.Controls.Add(this.playerHealthPointsLabel);
             this.Name = "GameWindow";
             this.Text = "Air Force";
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GameWindow_KeyDown);
-            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.GameWindow_KeyUp);
             ((System.ComponentModel.ISupportInitialize)(this.GameField)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

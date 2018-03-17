@@ -44,6 +44,7 @@ namespace AirForce
         private void StartGame()
         {
             FlyingObjects = new List<FlyingObject>();
+            DeadObjects = new List<FlyingObject>();
             
             Player = PlayerShip.GetInstance();
             FlyingObjects.Add(Player);
@@ -61,7 +62,7 @@ namespace AirForce
                     DeadObjects.Add(flyingObject);
             }
 
-            DeadObjects = new List<FlyingObject>();
+            DeadObjects.Clear();
         }
 
         Random random = new Random();
