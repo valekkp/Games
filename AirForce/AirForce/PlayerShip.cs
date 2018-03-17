@@ -9,7 +9,7 @@ namespace AirForce
         public int HorizontalSpeed { get; set; }
         public int VerticalSpeed { get; set; }
 
-        private readonly int mSpeed = 5;
+        private readonly int mSpeed = 4;
         private readonly Size mSize = new Size(50, 50);
         private readonly Brush mBrush = Brushes.DarkOliveGreen;
         private readonly int mHealthPoints = 3;
@@ -22,7 +22,7 @@ namespace AirForce
             Brush = mBrush;
             Size = mSize;
             Speed = mSpeed;
-            Position = new Point(100, GameWindow.GameFieldSize.Height/2);
+            Position = new Point2D(100, GameWindow.GameFieldSize.Height/2);
         }
 
         public static PlayerShip GetInstance()
@@ -35,7 +35,12 @@ namespace AirForce
             SetSpeed();
 
             Position.X += HorizontalSpeed;
+            if (Position.X < Size.Width / 2) Position.X = Size.Width / 2;
+            if (Position.X > GameWindow.GameFieldSize.Width - Size.Width / 2) Position.X = GameWindow.GameFieldSize.Width - Size.Width / 2;
+
             Position.Y += VerticalSpeed;
+            if (Position.Y < Size.Height / 2) Position.Y = Size.Height / 2;
+            if (Position.Y > GameWindow.GameFieldSize.Height - Size.Height / 2) Position.Y = GameWindow.GameFieldSize.Height - Size.Height / 2;
         }
 
         //ToDo: Find better solution and clean
@@ -93,6 +98,11 @@ namespace AirForce
             {
                 VerticalSpeed = 0;
             }
+        }
+
+        public override void MakeAction()
+        {
+            base.MakeAction();
         }
     }
 }

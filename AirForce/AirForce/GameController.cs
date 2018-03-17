@@ -13,6 +13,7 @@ namespace AirForce
     {
         public List<FlyingObject> FlyingObjects { get; private set; }
         public List<FlyingObject> DeadObjects { get; private set; }
+        public List<Bullet> EnemyBullets { get; private set; }
 
         public Size GameFieldSize { get; }
 
@@ -23,10 +24,12 @@ namespace AirForce
 
         private static GameController instance;
 
+        private readonly Random mRandom = new Random();
+
         private GameController()
         {
             mMoveTimer.Interval = 1;
-            mMoveTimer.Tick += (s,e) => MoveObject();
+            mMoveTimer.Tick += (s,e) => MoveObjects();
 
             mSpawnTimer.Interval = 1000;
             mSpawnTimer.Tick += (s, e) => SpawnObject();
@@ -45,6 +48,7 @@ namespace AirForce
         {
             FlyingObjects = new List<FlyingObject>();
             DeadObjects = new List<FlyingObject>();
+            EnemyBullets = new List<Bullet>();
             
             Player = PlayerShip.GetInstance();
             FlyingObjects.Add(Player);
@@ -53,28 +57,56 @@ namespace AirForce
             mSpawnTimer.Start();
         }
 
-        private void MoveObject()
+        private void MoveObjects()
         {
             foreach (var flyingObject in FlyingObjects)
             {
                 flyingObject.Move();
+                if(flyingObject is FighterShip) ((FighterShip)flyingObject).AddCooldown();
+                if (flyingObject is FighterShip && (flyingObject as FighterShip).ReadyToShoot(Player))
+                {
+                    EnemyBullets.Add(new Bullet(flyingObject.Position));
+                    (flyingObject as FighterShip).ResetCooldown();
+                }
+
                 if (flyingObject.Position.X <= -flyingObject.Size.Width)
                     DeadObjects.Add(flyingObject);
             }
 
-            DeadObjects.Clear();
+                FlyingObjects = FlyingObjects.Concat(EnemyBullets).ToList();
+                EnemyBullets.Clear();
+                CheckIntersections();
+                FlyingObjects = FlyingObjects.Except(DeadObjects).ToList();
+                DeadObjects.Clear();
         }
 
-        Random random = new Random();
+        private void CheckIntersections()
+        {
+            foreach (var ship in FlyingObjects)
+            {
+                if (ship is PlayerShip) continue;
+                if (DoesIntersect(ship, Player))
+                {
+                    DeadObjects.Add(ship);
+                }
+            }
+        }
+
+        private bool DoesIntersect(FlyingObject ship, PlayerShip player)
+        {
+            return ship.Position.DistanceTo(player.Position) < (ship.Size.Width/2 + player.Size.Width/2);
+        }
+
+
         private void SpawnObject()
         {
-            switch ((ShipType)random.Next(2))
+            switch ((ShipType)mRandom.Next(2))
             {
                 case ShipType.Fighter:
-                    FlyingObjects.Add(new FighterShip(GameFieldSize));
+                    FlyingObjects.Add(new FighterShip(new Point2D(GameFieldSize.Width + FighterShip.Size.Width / 2, FighterShip.Size.Height / 2 + mRandom.Next(GameFieldSize.Height - FighterShip.Size.Height / 2))));
                     break;
                 case ShipType.Tank:
-                    FlyingObjects.Add(new TankShip(GameFieldSize));
+                    FlyingObjects.Add(new TankShip(new Point2D(GameFieldSize.Width + TankShip.Size.Width / 2, TankShip.Size.Height / 2 + mRandom.Next(0, GameFieldSize.Height - TankShip.Size.Height / 2))));
                     break;
                 default:
                     break;

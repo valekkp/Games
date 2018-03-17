@@ -1,27 +1,24 @@
 ﻿using System;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace AirForce
 {
     public class Bullet : FlyingObject
     {
-        private readonly Size mSize = new Size(5, 5);
+        public static readonly Size mSize = new Size(10, 10);
+
         private readonly Brush mBrush = Brushes.Firebrick;
         private readonly int mSpeed = 5;
         private readonly int mHealthPoints = 1;
 
-        public Bullet(Size gameFieldSize)
+        public Bullet(Point2D position)
         {
-            Random random = new Random();
             Speed = mSpeed;
             HealthPoints = mHealthPoints;
+            Size = mSize;
             Brush = mBrush;
-            Position = new Point(gameFieldSize.Width + mSize.Width / 2, mSize.Height / 2 + random.Next(gameFieldSize.Height - mSize.Height / 2));
-        }
-
-        public override void MakeAction()
-        {
-
+            Position = position;
         }
     }
 }

@@ -5,7 +5,7 @@ namespace AirForce
 {
     public abstract class FlyingObject
     {
-        public Point Position;
+        public Point2D Position;
 
         protected Brush Brush { get; set; }
 
