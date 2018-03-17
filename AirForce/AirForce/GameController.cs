@@ -11,26 +11,45 @@ namespace AirForce
 {
     class GameController
     {
-        private readonly Timer mMoveTimer = new Timer();
-        private readonly Timer mSpawnTimer = new Timer();
-
         public List<FlyingObject> FlyingObjects { get; private set; }
+        public List<FlyingObject> DeadObjects { get; private set; }
 
         public Size GameFieldSize { get; }
 
-        public GameController(Size gameFieldSize)
+        public PlayerShip Player;
+
+        private readonly Timer mMoveTimer = new Timer();
+        private readonly Timer mSpawnTimer = new Timer();
+
+        private static GameController instance;
+
+        private GameController()
         {
             mMoveTimer.Interval = 1;
             mMoveTimer.Tick += (s,e) => MoveObject();
-            mMoveTimer.Start();
 
             mSpawnTimer.Interval = 1000;
             mSpawnTimer.Tick += (s, e) => SpawnObject();
-            mSpawnTimer.Start();
 
+            GameFieldSize = GameWindow.GameFieldSize;
+
+            StartGame();
+        }
+
+        public static GameController GetInstance()
+        {
+            return instance ?? new GameController();
+        }
+
+        private void StartGame()
+        {
             FlyingObjects = new List<FlyingObject>();
+            
+            Player = PlayerShip.GetInstance();
+            FlyingObjects.Add(Player);
 
-            GameFieldSize = gameFieldSize;
+            mMoveTimer.Start();
+            mSpawnTimer.Start();
         }
 
         private void MoveObject()
@@ -38,13 +57,16 @@ namespace AirForce
             foreach (var flyingObject in FlyingObjects)
             {
                 flyingObject.Move();
+                if (flyingObject.Position.X <= -flyingObject.Size.Width)
+                    DeadObjects.Add(flyingObject);
             }
+
+            DeadObjects = new List<FlyingObject>();
         }
 
+        Random random = new Random();
         private void SpawnObject()
         {
-            Random random = new Random();
-            
             switch ((ShipType)random.Next(2))
             {
                 case ShipType.Fighter:

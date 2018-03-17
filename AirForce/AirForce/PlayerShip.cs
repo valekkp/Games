@@ -5,23 +5,32 @@ namespace AirForce
 {
     public class PlayerShip : FlyingObject
     {
-        private readonly Size mSize = new Size(50, 30);
-        private readonly Brush mBrush = Brushes.DarkGoldenrod;
-        private readonly int mSpeed = 2;
+        public int HorizontalSpeed { get; set; }
+        public int VerticalSpeed { get; set; }
+
+        private readonly Size mSize = new Size(50, 50);
+        private readonly Brush mBrush = Brushes.DarkOliveGreen;
         private readonly int mHealthPoints = 3;
 
-        public PlayerShip(Size gameFieldSize)
+        private static PlayerShip instance;
+
+        private PlayerShip()
         {
-            Random random = new Random();
-            Speed = mSpeed;
             HealthPoints = mHealthPoints;
             Brush = mBrush;
-            Position = new Point(gameFieldSize.Width + mSize.Width / 2, mSize.Height / 2 + random.Next(gameFieldSize.Height - mSize.Height / 2));
+            Size = mSize;
+            Position = new Point(100, GameWindow.GameFieldSize.Height/2);
         }
 
-        public override void MakeAction()
+        public static PlayerShip GetInstance()
         {
+            return instance ?? (instance = new PlayerShip());
+        }
 
+        public override void Move()
+        {
+            Position.X += HorizontalSpeed;
+            Position.Y += VerticalSpeed;
         }
     }
 }
