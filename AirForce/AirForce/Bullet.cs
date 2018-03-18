@@ -6,18 +6,29 @@ namespace AirForce
 {
     public class Bullet : FlyingObject
     {
-        public static readonly Size mSize = new Size(10, 10);
+        public static readonly Size Size = new Size(10, 10);
+        public static readonly int Speed = 5;
 
-        private readonly Brush mBrush = Brushes.Firebrick;
-        private readonly int mSpeed = 5;
+        private readonly Brush mEnemyBrush = Brushes.Firebrick;
+        private readonly Brush mPlayerBrush = Brushes.DarkBlue;
+        
         private readonly int mHealthPoints = 1;
 
         public Bullet(Point2D position)
         {
-            Speed = mSpeed;
+            base.Speed = Speed;
             HealthPoints = mHealthPoints;
-            Size = mSize;
-            Brush = mBrush;
+            base.Size = Size;
+            Position = position;
+        }
+
+        public Bullet(Point2D position, int speed, FlyingObjectType bulletType)
+        {
+            Type = bulletType;
+            base.Speed = speed;
+            HealthPoints = mHealthPoints;
+            base.Size = Size;
+            Brush = bulletType == FlyingObjectType.PlayerBullet ? mPlayerBrush : mEnemyBrush;
             Position = position;
         }
     }

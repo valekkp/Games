@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Timer = System.Windows.Forms.Timer;
 
 namespace AirForce
@@ -14,12 +15,13 @@ namespace AirForce
         public List<FlyingObject> FlyingObjects { get; private set; }
         public List<FlyingObject> DeadObjects { get; private set; }
         public List<Bullet> EnemyBullets { get; private set; }
+        public List<Bullet> PlayerBullets { get; private set; }
 
         public Size GameFieldSize { get; }
 
         public PlayerShip Player;
 
-        private readonly Timer mMoveTimer = new Timer();
+        private readonly Timer mUpdateTimer = new Timer();
         private readonly Timer mSpawnTimer = new Timer();
 
         private static GameController instance;
@@ -28,9 +30,7 @@ namespace AirForce
 
         private GameController()
         {
-            mMoveTimer.Interval = 1;
-            mMoveTimer.Tick += (s,e) => MoveObjects();
-
+            
             mSpawnTimer.Interval = 1000;
             mSpawnTimer.Tick += (s, e) => SpawnObject();
 
@@ -49,63 +49,80 @@ namespace AirForce
             FlyingObjects = new List<FlyingObject>();
             DeadObjects = new List<FlyingObject>();
             EnemyBullets = new List<Bullet>();
+            PlayerBullets = new List<Bullet>();
             
             Player = PlayerShip.GetInstance();
             FlyingObjects.Add(Player);
 
-            mMoveTimer.Start();
+            mUpdateTimer.Start();
             mSpawnTimer.Start();
         }
 
-        private void MoveObjects()
+        public void UpdateObjects()
         {
             foreach (var flyingObject in FlyingObjects)
             {
                 flyingObject.Move();
+                
                 if(flyingObject is FighterShip) ((FighterShip)flyingObject).AddCooldown();
                 if (flyingObject is FighterShip && (flyingObject as FighterShip).ReadyToShoot(Player))
                 {
-                    EnemyBullets.Add(new Bullet(flyingObject.Position));
+                    EnemyBullets.Add(new Bullet(new Point2D(flyingObject.Position.X - flyingObject.Size.Width/2 - Bullet.Size.Width/2, flyingObject.Position.Y), Bullet.Speed, FlyingObjectType.EnemyBullet));
                     (flyingObject as FighterShip).ResetCooldown();
                 }
-
-                if (flyingObject.Position.X <= -flyingObject.Size.Width)
-                    DeadObjects.Add(flyingObject);
             }
 
-                FlyingObjects = FlyingObjects.Concat(EnemyBullets).ToList();
-                EnemyBullets.Clear();
-                CheckIntersections();
-                FlyingObjects = FlyingObjects.Except(DeadObjects).ToList();
-                DeadObjects.Clear();
+            if (Keyboard.IsKeyDown(Key.Space) && Player.Cooldown == 0)
+            {
+                FlyingObjects.Add(new Bullet(new Point2D(Player.Position.X + Player.Size.Width/2 + Bullet.Size.Width/2, Player.Position.Y), -Bullet.Speed, FlyingObjectType.PlayerBullet));
+                Player.Cooldown = 25;
+            }
+
+            if (Keyboard.IsKeyUp(Key.Space) && Player.Cooldown > 15)
+                Player.Cooldown = 5;
+
+            if(Player.Cooldown > 0)
+                Player.Cooldown -= 1;
+
+            FlyingObjects.RemoveAll(flyingObject => flyingObject.Position.X <= 
+                                                    -flyingObject.Size.Width / 2
+                                                    || flyingObject.Position.X >=
+                                                    GameFieldSize.Width + flyingObject.Size.Width / 2
+                                                    || flyingObject.HealthPoints == 0);
+            FlyingObjects = FlyingObjects.Concat(EnemyBullets).ToList();
+            EnemyBullets.Clear();
+            CheckIntersections();
+            FlyingObjects = FlyingObjects.Except(DeadObjects).ToList();
+            DeadObjects.Clear();
         }
 
         private void CheckIntersections()
         {
-            foreach (var ship in FlyingObjects)
+            foreach (var source in FlyingObjects)
             {
-                if (ship is PlayerShip) continue;
-                if (DoesIntersect(ship, Player))
+                foreach (var target in FlyingObjects)
                 {
-                    DeadObjects.Add(ship);
+
+
+                    if (source.Equals(target)) continue;
+                    if (IntersectionController.DoCirclesIntersect(source, target))
+                    {
+                        //DeadObjects.Add(ship);
+                        IntersectionController.ActionOnIntersection(source, target);
+                    }
                 }
             }
+            
         }
-
-        private bool DoesIntersect(FlyingObject ship, PlayerShip player)
-        {
-            return ship.Position.DistanceTo(player.Position) < (ship.Size.Width/2 + player.Size.Width/2);
-        }
-
 
         private void SpawnObject()
         {
-            switch ((ShipType)mRandom.Next(2))
+            switch ((FlyingObjectType)mRandom.Next((int)FlyingObjectType.Fighter, (int) FlyingObjectType.Meteorite))
             {
-                case ShipType.Fighter:
+                case FlyingObjectType.Fighter:
                     FlyingObjects.Add(new FighterShip(new Point2D(GameFieldSize.Width + FighterShip.Size.Width / 2, FighterShip.Size.Height / 2 + mRandom.Next(GameFieldSize.Height - FighterShip.Size.Height / 2))));
                     break;
-                case ShipType.Tank:
+                case FlyingObjectType.Tank:
                     FlyingObjects.Add(new TankShip(new Point2D(GameFieldSize.Width + TankShip.Size.Width / 2, TankShip.Size.Height / 2 + mRandom.Next(0, GameFieldSize.Height - TankShip.Size.Height / 2))));
                     break;
                 default:

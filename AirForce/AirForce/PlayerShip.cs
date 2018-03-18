@@ -8,11 +8,12 @@ namespace AirForce
     {
         public int HorizontalSpeed { get; set; }
         public int VerticalSpeed { get; set; }
+        public int Cooldown { get; set; }
 
         private readonly int mSpeed = 4;
         private readonly Size mSize = new Size(50, 50);
         private readonly Brush mBrush = Brushes.DarkOliveGreen;
-        private readonly int mHealthPoints = 3;
+        private readonly int mHealthPoints = 1000;
 
         private static PlayerShip instance;
 
@@ -22,7 +23,8 @@ namespace AirForce
             Brush = mBrush;
             Size = mSize;
             Speed = mSpeed;
-            Position = new Point2D(100, GameWindow.GameFieldSize.Height/2);
+            Position = new Point2D(100, GameWindow.GameFieldSize.Height / 2);
+            Cooldown = 0;
         }
 
         public static PlayerShip GetInstance()
@@ -36,11 +38,13 @@ namespace AirForce
 
             Position.X += HorizontalSpeed;
             if (Position.X < Size.Width / 2) Position.X = Size.Width / 2;
-            if (Position.X > GameWindow.GameFieldSize.Width - Size.Width / 2) Position.X = GameWindow.GameFieldSize.Width - Size.Width / 2;
+            if (Position.X > GameWindow.GameFieldSize.Width - Size.Width / 2)
+                Position.X = GameWindow.GameFieldSize.Width - Size.Width / 2;
 
             Position.Y += VerticalSpeed;
             if (Position.Y < Size.Height / 2) Position.Y = Size.Height / 2;
-            if (Position.Y > GameWindow.GameFieldSize.Height - Size.Height / 2) Position.Y = GameWindow.GameFieldSize.Height - Size.Height / 2;
+            if (Position.Y > GameWindow.GameFieldSize.Height - Size.Height / 2)
+                Position.Y = GameWindow.GameFieldSize.Height - Size.Height / 2;
         }
 
         //ToDo: Find better solution and clean
@@ -87,22 +91,17 @@ namespace AirForce
             //Not pressed
 
             if (Keyboard.IsKeyUp(Key.A) && Keyboard.IsKeyUp(Key.Left)
-                && Keyboard.IsKeyUp(Key.D) && Keyboard.IsKeyUp(Key.Right))
+                                        && Keyboard.IsKeyUp(Key.D) && Keyboard.IsKeyUp(Key.Right))
             {
                 HorizontalSpeed = 0;
             }
 
 
             if (Keyboard.IsKeyUp(Key.W) && Keyboard.IsKeyUp(Key.Up)
-                && Keyboard.IsKeyUp(Key.S) && Keyboard.IsKeyUp(Key.Down))
+                                        && Keyboard.IsKeyUp(Key.S) && Keyboard.IsKeyUp(Key.Down))
             {
                 VerticalSpeed = 0;
             }
-        }
-
-        public override void MakeAction()
-        {
-            base.MakeAction();
         }
     }
 }

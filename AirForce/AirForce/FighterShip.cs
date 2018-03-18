@@ -15,6 +15,7 @@ namespace AirForce
 
         public FighterShip(Point2D position)
         {
+            Type = FlyingObjectType.Fighter;
             Speed = mSpeed;
             HealthPoints = mHealthPoints;
             Brush = mBrush;

@@ -13,9 +13,11 @@ namespace AirForce
 
         protected int Speed { get; set; }
 
-        protected int HealthPoints { get; set; }
+        public int HealthPoints { get; set; }
 
         protected Random Random = new Random();
+
+        public FlyingObjectType Type { get; protected set; }
 
         public void Draw(Graphics graphics)
         {

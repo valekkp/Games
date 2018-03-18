@@ -14,6 +14,7 @@ namespace AirForce
 
         public TankShip(Point2D position)
         {
+            Type = FlyingObjectType.Tank;
             Rectangle rectangle = new Rectangle();
             Speed = mSpeed;
             HealthPoints = mHealthPoints;
