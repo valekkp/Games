@@ -8,7 +8,12 @@ namespace AirForce
     {
         public int HorizontalSpeed { get; set; }
         public int VerticalSpeed { get; set; }
-        public int Cooldown { get; set; }
+        public int Cooldown { get; private set; }
+
+        public Point2D CurrentPosition
+        {
+            get { return Position; }
+        }
 
         private readonly int mSpeed = 4;
         private readonly Size mSize = new Size(50, 50);
@@ -102,6 +107,32 @@ namespace AirForce
             {
                 VerticalSpeed = 0;
             }
+        }
+
+        public bool ReadyToShoot()
+        {
+            return Cooldown == 0;
+        }
+
+        public void Shoot()
+        {
+            GameController.GetInstance()
+                    .PlayerBullets.Add(new Bullet(
+                        new Point2D(Position.X + Size.Width / 2 + Bullet.Size.Width/2, Position.Y), 
+                        FlyingObjectType.PlayerBullet));
+            Cooldown = 25;
+        }
+
+        public void SetFasterCooldown()
+        {
+            if(Cooldown > 5)
+                Cooldown = 5;
+        }
+
+        public void SubtractCooldown()
+        {
+            if(Cooldown > 0)
+                Cooldown -= 1;
         }
     }
 }

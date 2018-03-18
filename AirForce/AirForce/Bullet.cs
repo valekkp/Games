@@ -22,10 +22,10 @@ namespace AirForce
             Position = position;
         }
 
-        public Bullet(Point2D position, int speed, FlyingObjectType bulletType)
+        public Bullet(Point2D position, FlyingObjectType bulletType)
         {
             Type = bulletType;
-            base.Speed = speed;
+            base.Speed = bulletType == FlyingObjectType.PlayerBullet ? -Speed : Speed;
             HealthPoints = mHealthPoints;
             base.Size = Size;
             Brush = bulletType == FlyingObjectType.PlayerBullet ? mPlayerBrush : mEnemyBrush;

@@ -13,9 +13,9 @@ namespace AirForce
     class GameController
     {
         public List<FlyingObject> FlyingObjects { get; private set; }
-        public List<FlyingObject> DeadObjects { get; private set; }
-        public List<Bullet> EnemyBullets { get; private set; }
-        public List<Bullet> PlayerBullets { get; private set; }
+        //public List<FlyingObject> DeadObjects { get; private set; }
+        public List<Bullet> EnemyBullets { get; set; }
+        public List<Bullet> PlayerBullets { get; set; }
 
         public Size GameFieldSize { get; }
 
@@ -41,13 +41,13 @@ namespace AirForce
 
         public static GameController GetInstance()
         {
-            return instance ?? new GameController();
+            return instance ?? (instance = new GameController());
         }
 
         private void StartGame()
         {
             FlyingObjects = new List<FlyingObject>();
-            DeadObjects = new List<FlyingObject>();
+            //DeadObjects = new List<FlyingObject>();
             EnemyBullets = new List<Bullet>();
             PlayerBullets = new List<Bullet>();
             
@@ -63,37 +63,48 @@ namespace AirForce
             foreach (var flyingObject in FlyingObjects)
             {
                 flyingObject.Move();
-                
-                if(flyingObject is FighterShip) ((FighterShip)flyingObject).AddCooldown();
-                if (flyingObject is FighterShip && (flyingObject as FighterShip).ReadyToShoot(Player))
+                var fighter = flyingObject as FighterShip;
+                if (fighter != null)
                 {
-                    EnemyBullets.Add(new Bullet(new Point2D(flyingObject.Position.X - flyingObject.Size.Width/2 - Bullet.Size.Width/2, flyingObject.Position.Y), Bullet.Speed, FlyingObjectType.EnemyBullet));
-                    (flyingObject as FighterShip).ResetCooldown();
+                    if (fighter.ReadyToShoot())
+                    {
+                        //ToDo: move to Update method
+                        fighter.Shoot();
+                    }
+                    else
+                    {
+                        fighter.SubtractCooldown();
+                    }
                 }
             }
 
-            if (Keyboard.IsKeyDown(Key.Space) && Player.Cooldown == 0)
+            if (Keyboard.IsKeyDown(Key.Space) && Player.ReadyToShoot())
             {
-                FlyingObjects.Add(new Bullet(new Point2D(Player.Position.X + Player.Size.Width/2 + Bullet.Size.Width/2, Player.Position.Y), -Bullet.Speed, FlyingObjectType.PlayerBullet));
-                Player.Cooldown = 25;
+                //ToDo: move to Update method
+                Player.Shoot();
+            }
+            else
+            {
+                Player.SubtractCooldown();
             }
 
-            if (Keyboard.IsKeyUp(Key.Space) && Player.Cooldown > 15)
-                Player.Cooldown = 5;
-
-            if(Player.Cooldown > 0)
-                Player.Cooldown -= 1;
+            if (Keyboard.IsKeyUp(Key.Space))
+                Player.SetFasterCooldown();
 
             FlyingObjects.RemoveAll(flyingObject => flyingObject.Position.X <= 
                                                     -flyingObject.Size.Width / 2
                                                     || flyingObject.Position.X >=
                                                     GameFieldSize.Width + flyingObject.Size.Width / 2
                                                     || flyingObject.HealthPoints == 0);
+
+            FlyingObjects = FlyingObjects.Concat(PlayerBullets).ToList();
+            PlayerBullets.Clear();
             FlyingObjects = FlyingObjects.Concat(EnemyBullets).ToList();
             EnemyBullets.Clear();
+
             CheckIntersections();
-            FlyingObjects = FlyingObjects.Except(DeadObjects).ToList();
-            DeadObjects.Clear();
+            //FlyingObjects = FlyingObjects.Except(DeadObjects).ToList();
+            //DeadObjects.Clear();
         }
 
         private void CheckIntersections()
@@ -102,8 +113,6 @@ namespace AirForce
             {
                 foreach (var target in FlyingObjects)
                 {
-
-
                     if (source.Equals(target)) continue;
                     if (IntersectionController.DoCirclesIntersect(source, target))
                     {
