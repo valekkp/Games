@@ -13,13 +13,12 @@ namespace AirForce
     class GameController
     {
         public List<FlyingObject> FlyingObjects { get; private set; }
-        //public List<FlyingObject> DeadObjects { get; private set; }
-        public List<Bullet> EnemyBullets { get; set; }
-        public List<Bullet> PlayerBullets { get; set; }
+        public List<Bullet> Bullets { get; private set; }
+
 
         public Size GameFieldSize { get; }
 
-        public PlayerShip Player;
+        private readonly PlayerShip player = PlayerShip.GetInstance();
 
         private readonly Timer mUpdateTimer = new Timer();
         private readonly Timer mSpawnTimer = new Timer();
@@ -47,12 +46,9 @@ namespace AirForce
         private void StartGame()
         {
             FlyingObjects = new List<FlyingObject>();
+            Bullets = new List<Bullet>();
             //DeadObjects = new List<FlyingObject>();
-            EnemyBullets = new List<Bullet>();
-            PlayerBullets = new List<Bullet>();
-            
-            Player = PlayerShip.GetInstance();
-            FlyingObjects.Add(Player);
+            FlyingObjects.Add(player);
 
             mUpdateTimer.Start();
             mSpawnTimer.Start();
@@ -63,40 +59,23 @@ namespace AirForce
             foreach (var flyingObject in FlyingObjects)
             {
                 flyingObject.Move();
-                var fighter = flyingObject as FighterShip;
-                if (fighter != null)
-                {
-                    //ToDo: move to Update method
-                    fighter.Shoot();
-                    fighter.Dodge();
-                }
+                flyingObject.Shoot();
             }
 
-            if (Keyboard.IsKeyDown(Key.Space))
-            {
-                //ToDo: move to Update method
-                Player.Shoot();
-            }
+            FlyingObjects.AddRange(Bullets);
+            Bullets.Clear();
+            CheckIntersections();
 
-            if (Keyboard.IsKeyUp(Key.Space))
-                Player.SetFasterCooldown();
+            ClearDeadObjects();
+        }
 
+        private void ClearDeadObjects()
+        {
             FlyingObjects.RemoveAll(flyingObject => flyingObject.Position.X <=
                                                     -flyingObject.Size.Width / 2
-                                                    || flyingObject.Position.X >=
+                                                    || flyingObject.Position.X >
                                                     GameFieldSize.Width + flyingObject.Size.Width / 2
-                                                    || flyingObject.HealthPoints == 0
-                                                    || flyingObject is Bullet && flyingObject.Position.X >
-                                                    GameFieldSize.Width + Bullet.Size.Width / 2);
-
-            FlyingObjects = FlyingObjects.Concat(PlayerBullets).ToList();
-            PlayerBullets.Clear();
-            FlyingObjects = FlyingObjects.Concat(EnemyBullets).ToList();
-            EnemyBullets.Clear();
-
-            CheckIntersections();
-            //FlyingObjects = FlyingObjects.Except(DeadObjects).ToList();
-            //DeadObjects.Clear();
+                                                    || flyingObject.HealthPoints == 0);
         }
 
         private void CheckIntersections()

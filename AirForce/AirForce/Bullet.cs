@@ -14,22 +14,26 @@ namespace AirForce
         
         private readonly int mHealthPoints = 1;
 
-        public Bullet(Point2D position)
-        {
-            base.Speed = Speed;
-            HealthPoints = mHealthPoints;
-            base.Size = Size;
-            Position = position;
-        }
+        //public Bullet(Point2D position)
+        //{
+        //    HorizontalSpeed = Speed;
+        //    HealthPoints = mHealthPoints;
+        //    base.Size = Size;
+        //    Position = position;
+        //}
 
-        public Bullet(Point2D position, FlyingObjectType bulletType)
+        public Bullet(FlyingObject source)
         {
-            Type = bulletType;
-            base.Speed = bulletType == FlyingObjectType.PlayerBullet ? -Speed : Speed;
+            mover = new MovingHorizontallyBehavior(this);
+            HorizontalSpeed = source is PlayerShip ? Speed : -Speed;
+            Type = source is PlayerShip ? FlyingObjectType.PlayerBullet : FlyingObjectType.EnemyBullet;
             HealthPoints = mHealthPoints;
             base.Size = Size;
-            Brush = bulletType == FlyingObjectType.PlayerBullet ? mPlayerBrush : mEnemyBrush;
-            Position = position;
+            base.Speed = Speed;
+            Brush = source is PlayerShip ? mPlayerBrush : mEnemyBrush;
+            Position = source is PlayerShip
+                ? new Point2D(source.Position.X + source.Size.Width / 2 + Size.Width / 2, source.Position.Y)
+                : new Point2D(source.Position.X - source.Size.Width / 2 - Size.Width / 2, source.Position.Y);
         }
     }
 }

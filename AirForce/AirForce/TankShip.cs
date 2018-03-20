@@ -14,12 +14,13 @@ namespace AirForce
 
         public TankShip(Point2D position)
         {
+            mover = new MovingHorizontallyBehavior(this);
             Type = FlyingObjectType.Tank;
-            Rectangle rectangle = new Rectangle();
-            Speed = mSpeed;
+            HorizontalSpeed = -mSpeed;
             HealthPoints = mHealthPoints;
             Brush = mBrush;
             base.Size = Size;
+            base.Speed = mSpeed;
             Position = position;
         }
     }
