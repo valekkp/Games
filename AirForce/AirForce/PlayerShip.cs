@@ -116,23 +116,22 @@ namespace AirForce
 
         public void Shoot()
         {
-            GameController.GetInstance()
+            if (ReadyToShoot())
+            {
+                GameController.GetInstance()
                     .PlayerBullets.Add(new Bullet(
-                        new Point2D(Position.X + Size.Width / 2 + Bullet.Size.Width/2, Position.Y), 
+                        new Point2D(Position.X + Size.Width / 2 + Bullet.Size.Width / 2, Position.Y),
                         FlyingObjectType.PlayerBullet));
-            Cooldown = 25;
+                Cooldown = 25;
+            }
+            else if (Cooldown > 0)
+                Cooldown -= 1;
         }
 
         public void SetFasterCooldown()
         {
             if(Cooldown > 5)
                 Cooldown = 5;
-        }
-
-        public void SubtractCooldown()
-        {
-            if(Cooldown > 0)
-                Cooldown -= 1;
         }
     }
 }

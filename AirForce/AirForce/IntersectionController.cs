@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ namespace AirForce
 {
     public static class IntersectionController
     {
+
         //private static int flyingObjectsTypesCount = Enum.GetNames(typeof(FlyingObjectType)).Length;
         public readonly static bool[,] IntersectionTable =
         {

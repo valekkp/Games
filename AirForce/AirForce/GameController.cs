@@ -66,36 +66,28 @@ namespace AirForce
                 var fighter = flyingObject as FighterShip;
                 if (fighter != null)
                 {
-                    if (fighter.ReadyToShoot())
-                    {
-                        //ToDo: move to Update method
-                        fighter.Shoot();
-                    }
-                    else
-                    {
-                        fighter.SubtractCooldown();
-                    }
+                    //ToDo: move to Update method
+                    fighter.Shoot();
+                    fighter.Dodge();
                 }
             }
 
-            if (Keyboard.IsKeyDown(Key.Space) && Player.ReadyToShoot())
+            if (Keyboard.IsKeyDown(Key.Space))
             {
                 //ToDo: move to Update method
                 Player.Shoot();
-            }
-            else
-            {
-                Player.SubtractCooldown();
             }
 
             if (Keyboard.IsKeyUp(Key.Space))
                 Player.SetFasterCooldown();
 
-            FlyingObjects.RemoveAll(flyingObject => flyingObject.Position.X <= 
+            FlyingObjects.RemoveAll(flyingObject => flyingObject.Position.X <=
                                                     -flyingObject.Size.Width / 2
                                                     || flyingObject.Position.X >=
                                                     GameFieldSize.Width + flyingObject.Size.Width / 2
-                                                    || flyingObject.HealthPoints == 0);
+                                                    || flyingObject.HealthPoints == 0
+                                                    || flyingObject is Bullet && flyingObject.Position.X >
+                                                    GameFieldSize.Width + Bullet.Size.Width / 2);
 
             FlyingObjects = FlyingObjects.Concat(PlayerBullets).ToList();
             PlayerBullets.Clear();
