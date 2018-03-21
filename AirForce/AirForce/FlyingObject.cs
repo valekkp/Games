@@ -17,13 +17,11 @@ namespace AirForce
 
         public int HealthPoints { get; set; }
 
-        protected Random Random = new Random();
-
         public FlyingObjectType Type { get; protected set; }
 
-        protected IMovable mover;
+        protected IMovable Mover;
 
-        protected IShootable shooter;
+        protected IShootable Shooter;
 
         public void Draw(Graphics graphics)
         {
@@ -33,12 +31,12 @@ namespace AirForce
 
         public virtual void Move()
         {
-            mover?.Move();
+            Mover?.Move();
         }
 
         public virtual void Shoot()
         {
-            shooter?.Shoot();
+            Shooter?.Shoot();
         }
 
         public virtual void MakeAction()

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -71,10 +72,10 @@ namespace AirForce
 
         private void ClearDeadObjects()
         {
-            FlyingObjects.RemoveAll(flyingObject => flyingObject.Position.X <=
+            FlyingObjects.RemoveAll(flyingObject => flyingObject.Position.X <
                                                     -flyingObject.Size.Width / 2
                                                     || flyingObject.Position.X >
-                                                    GameFieldSize.Width + flyingObject.Size.Width / 2
+                                                    GameFieldSize.Width + flyingObject.Size.Width / 2 + 10
                                                     || flyingObject.HealthPoints == 0);
         }
 
@@ -97,13 +98,20 @@ namespace AirForce
 
         private void SpawnObject()
         {
-            switch ((FlyingObjectType)mRandom.Next((int)FlyingObjectType.Fighter, (int) FlyingObjectType.Meteorite))
+            int randomNumber = mRandom.Next(4, 17);
+            switch (randomNumber / 4)
             {
-                case FlyingObjectType.Fighter:
+                case (int)FlyingObjectType.Fighter:
                     FlyingObjects.Add(new FighterShip(new Point2D(GameFieldSize.Width + FighterShip.Size.Width / 2, FighterShip.Size.Height / 2 + mRandom.Next(GameFieldSize.Height - FighterShip.Size.Height / 2))));
                     break;
-                case FlyingObjectType.Tank:
+                case (int)FlyingObjectType.Tank:
                     FlyingObjects.Add(new TankShip(new Point2D(GameFieldSize.Width + TankShip.Size.Width / 2, TankShip.Size.Height / 2 + mRandom.Next(0, GameFieldSize.Height - TankShip.Size.Height / 2))));
+                    break;
+                case (int)FlyingObjectType.Bird:
+                    FlyingObjects.Add(new Bird(new Point2D(GameFieldSize.Width + Bird.Size.Width / 2, Bird.Size.Height / 2 + mRandom.Next(0, GameFieldSize.Height - Bird.Size.Height / 2))));
+                    break;
+                case (int)FlyingObjectType.Meteorite:
+                    FlyingObjects.Add(new Meteorite(new Point2D(mRandom.Next(100, GameFieldSize.Width), -100)));
                     break;
                 default:
                     break;

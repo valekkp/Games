@@ -50,13 +50,17 @@
   <ItemGroup>
     <Compile Include="Behaviors\ManuallyMovingBehavior.cs" />
     <Compile Include="Behaviors\ManuallyShootingBehavior.cs" />
+    <Compile Include="Behaviors\MovingRandomlyBehavior.cs" />
+    <Compile Include="Bird.cs" />
+    <Compile Include="BulletType.cs" />
     <Compile Include="Interfaces\IShootable.cs" />
     <Compile Include="Behaviors\MovingAndDodgingBehavior.cs" />
-    <Compile Include="Behaviors\MovingHorizontallyAndVerticallyBehavior.cs" />
+    <Compile Include="Behaviors\MovingDiagonallyBehavior.cs" />
     <Compile Include="Behaviors\MovingHorizontallyBehavior.cs" />
     <Compile Include="GameController.cs" />
     <Compile Include="Interfaces\IMovable.cs" />
     <Compile Include="IntersectionController.cs" />
+    <Compile Include="Meteorite.cs" />
     <Compile Include="Point2D.cs" />
     <Compile Include="FlyingObjectType.cs" />
     <Compile Include="Behaviors\ShootingBehavior.cs" />

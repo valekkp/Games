@@ -16,25 +16,25 @@ namespace AirForce
         {
             #region Player
             {
-               /*with Player*/ false,
-               /*with Fighter*/ true,
-               /*with Tank*/ true,
-               /*with Meteorite*/ true,
-               /*with Bird*/ true,
-               /*with PlayerBullet*/ false,
-               /*with EnemyBullet*/ true,
+                /*with Player*/ false,
+                /*with Fighter*/ true,
+                /*with Tank*/ true,
+                /*with Bird*/ true,
+                /*with Meteorite*/ true,
+                /*with EnemyBullet*/ true,
+                /*with PlayerBullet*/ false,
             },
             #endregion Player
 
             #region Fighter
             {
-            /*with Player*/ true,
-            /*with Fighter*/ false,
-            /*with Tank*/ false,
-            /*with Meteorite*/ true,
-            /*with Bird*/ false,
-            /*with PlayerBullet*/ true,
-            /*with EnemyBullet*/ false,
+                /*with Player*/ true,
+                /*with Fighter*/ false,
+                /*with Tank*/ false,
+                /*with Bird*/ false,
+                /*with Meteorite*/ true,
+                /*with EnemyBullet*/ false,
+                /*with PlayerBullet*/ true,
             },
             #endregion Fighter
 
@@ -43,61 +43,60 @@ namespace AirForce
                 /*with Player*/ true,
                 /*with Fighter*/ false,
                 /*with Tank*/ false,
-                /*with Meteorite*/ true,
                 /*with Bird*/ false,
-                /*with PlayerBullet*/ true,
+                /*with Meteorite*/ true,
                 /*with EnemyBullet*/ false,
+                /*with PlayerBullet*/ true,
             },
             #endregion Player
-
-            #region Meteorite
-            {
-                /*with Player*/ true,
-                /*with Fighter*/ true,
-                /*with Tank*/ true,
-                /*with Meteorite*/ false,
-                /*with Bird*/ true,
-                /*with PlayerBullet*/ true,
-                /*with EnemyBullet*/ false,
-            },
-            #endregion Meteorite
 
             #region Bird
             {
                 /*with Player*/ true,
                 /*with Fighter*/ false,
                 /*with Tank*/ false,
-                /*with Meteorite*/ true,
                 /*with Bird*/ false,
-                /*with PlayerBullet*/ false,
+                /*with Meteorite*/ true,
                 /*with EnemyBullet*/ false,
+                /*with PlayerBullet*/ false,
             },
             #endregion Bird
 
-            #region PlayerBullet
+            #region Meteorite
             {
-                /*with Player*/ false,
+                /*with Player*/ true,
                 /*with Fighter*/ true,
                 /*with Tank*/ true,
-                /*with Meteorite*/ true,
-                /*with Bird*/ false,
-                /*with PlayerBullet*/ false,
-                /*with EnemyBullet*/ false,
+                /*with Bird*/ true,
+                /*with Meteorite*/ false,
+                /*with EnemyBullet*/ true,
+                /*with PlayerBullet*/ true,
             },
-            #endregion PlayerBullet
+            #endregion Meteorite
 
             #region EnemyBullet
             {
                 /*with Player*/ true,
                 /*with Fighter*/ false,
                 /*with Tank*/ false,
-                /*with Meteorite*/ false,
                 /*with Bird*/ false,
-                /*with PlayerBullet*/ false,
+                /*with Meteorite*/ true,
                 /*with EnemyBullet*/ false,
+                /*with PlayerBullet*/ false,
             },
             #endregion EnemyBullet
 
+            #region PlayerBullet
+            {
+                /*with Player*/ false,
+                /*with Fighter*/ true,
+                /*with Tank*/ true,
+                /*with Bird*/ false,
+                /*with Meteorite*/ true,
+                /*with EnemyBullet*/ false,
+                /*with PlayerBullet*/ false,
+            },
+            #endregion PlayerBullet
         };
 
         public static bool DoCirclesIntersect(FlyingObject source, FlyingObject target)

@@ -14,17 +14,9 @@ namespace AirForce
         
         private readonly int mHealthPoints = 1;
 
-        //public Bullet(Point2D position)
-        //{
-        //    HorizontalSpeed = Speed;
-        //    HealthPoints = mHealthPoints;
-        //    base.Size = Size;
-        //    Position = position;
-        //}
-
         public Bullet(FlyingObject source)
         {
-            mover = new MovingHorizontallyBehavior(this);
+            Mover = new MovingHorizontallyBehavior(this);
             HorizontalSpeed = source is PlayerShip ? Speed : -Speed;
             Type = source is PlayerShip ? FlyingObjectType.PlayerBullet : FlyingObjectType.EnemyBullet;
             HealthPoints = mHealthPoints;

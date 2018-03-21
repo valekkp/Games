@@ -17,8 +17,8 @@ namespace AirForce
 
         private PlayerShip()
         {
-            mover = new ManuallyMovingBehavior(this);
-            shooter = new ManuallyShootingBehavior(this);
+            Mover = new ManuallyMovingBehavior(this);
+            Shooter = new ManuallyShootingBehavior(this);
             HealthPoints = mHealthPoints;
             Brush = mBrush;
             base.Size = Size;
@@ -34,7 +34,7 @@ namespace AirForce
 
         public override void Move()
         {
-            mover.Move();
+            Mover.Move();
         }
     }
 }

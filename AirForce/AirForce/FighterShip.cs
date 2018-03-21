@@ -19,8 +19,8 @@ namespace AirForce
 
         public FighterShip(Point2D position)
         {
-            shooter = new ShootingBehavior(this);
-            mover = new MovingAndDodgingBehavior(this);
+            Shooter = new ShootingBehavior(this);
+            Mover = new MovingAndDodgingBehavior(this);
             Type = FlyingObjectType.Fighter;
             HorizontalSpeed = -Speed;
             VerticalSpeed = 0;
@@ -33,12 +33,12 @@ namespace AirForce
 
         public override void Move()
         {
-            mover.Move();
+            Mover.Move();
         }
 
         public override void Shoot()
         {
-            shooter.Shoot();
+            Shooter.Shoot();
         }
     }
 }
