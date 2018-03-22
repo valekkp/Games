@@ -16,7 +16,7 @@ namespace AirForce
 
         public Bullet(FlyingObject source)
         {
-            Mover = new MovingHorizontallyBehavior(this);
+            Mover = new MovingBehavior(this);
             HorizontalSpeed = source is PlayerShip ? Speed : -Speed;
             Type = source is PlayerShip ? FlyingObjectType.PlayerBullet : FlyingObjectType.EnemyBullet;
             HealthPoints = mHealthPoints;

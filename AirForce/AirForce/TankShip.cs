@@ -14,7 +14,7 @@ namespace AirForce
 
         public TankShip(Point2D position)
         {
-            Mover = new MovingHorizontallyBehavior(this);
+            Mover = new MovingBehavior(this);
             Type = FlyingObjectType.Tank;
             HorizontalSpeed = -mSpeed;
             HealthPoints = mHealthPoints;
