@@ -9,50 +9,59 @@ namespace AirForce
 {
     class MovingAndDodgingBehavior : IMovable
     {
-        private readonly FlyingObject flyingObject;
+        private readonly FlyingObject source;
+        private readonly int fieldOfView = 100;
 
-        public MovingAndDodgingBehavior(FlyingObject flyingObject)
+        public MovingAndDodgingBehavior(FlyingObject source)
         {
-            this.flyingObject = flyingObject;
+            this.source = source;
         }
 
         public void Move()
         {
             Dodge();
-            int horizontalSpeed = flyingObject.HorizontalSpeed;
-            int verticalSpeed = flyingObject.VerticalSpeed;
-            Size size = flyingObject.Size;
+            int horizontalSpeed = source.HorizontalSpeed;
+            int verticalSpeed = source.VerticalSpeed;
+            Size size = source.Size;
 
-            flyingObject.Position.X += horizontalSpeed;
-            flyingObject.Position.Y += verticalSpeed;
-            if (flyingObject.Position.Y - size.Height / 2 < 0)
-                flyingObject.Position.Y = size.Height / 2;
-            if (flyingObject.Position.Y + size.Height / 2 > GameWindow.GameFieldSize.Height)
-                flyingObject.Position.Y = GameWindow.GameFieldSize.Height - size.Height / 2;
+            source.Position.X += horizontalSpeed;
+            source.Position.Y += verticalSpeed;
+            if (source.Position.Y - size.Height / 2 < 0)
+                source.Position.Y = size.Height / 2;
+            if (source.Position.Y + size.Height / 2 > GameWindow.GameFieldSize.Height)
+                source.Position.Y = GameWindow.GameFieldSize.Height - size.Height / 2;
         }
 
         private void Dodge()
         {
-            int horizontalSpeed = flyingObject.Speed;
-            Point2D position = flyingObject.Position;
-            Size size = flyingObject.Size;
+            int verticalSpeed = source.Speed;
+            Point2D sourcePosition = source.Position;
+            Size size = source.Size;
 
-            var bullets = GameController.GetInstance().FlyingObjects
-                .Where(x => x is Bullet && (x as Bullet).HorizontalSpeed > 0)
-                .Where(bullet => bullet.Position.X - bullet.Size.Width / 2 < position.X + size.Width / 2)
-                .OrderByDescending(x => x.Position.X);
-            var bulletToDodge = bullets.FirstOrDefault(bullet =>
-                bullet.Position.Y + Bullet.Size.Height / 2 > position.Y - size.Height / 2
-                && bullet.Position.Y - Bullet.Size.Height / 2 < position.Y + size.Height / 2);
+            FlyingObject bulletToDodge = BulletToDodge();
             if (bulletToDodge != null)
             {
-                if (position.Y > bulletToDodge.Position.Y)
-                    flyingObject.VerticalSpeed = horizontalSpeed;
+                if (sourcePosition.Y > bulletToDodge.Position.Y)
+                    source.VerticalSpeed = verticalSpeed;
                 else
-                    flyingObject.VerticalSpeed = -horizontalSpeed;
+                    source.VerticalSpeed = -verticalSpeed;
             }
             else
-                flyingObject.VerticalSpeed = 0;
+                source.VerticalSpeed = 0;
+        }
+
+        private FlyingObject BulletToDodge()
+        {
+            Size size = source.Size;
+            Point2D sourcePosition = source.Position;
+            return GameController.GetInstance().FlyingObjects
+                .Where(x => x is Bullet && (x as Bullet).HorizontalSpeed > 0)
+                .Where(bullet => bullet.Position.X - bullet.Size.Width / 2 < sourcePosition.X + size.Width / 2)
+                .OrderByDescending(x => x.Position.X)
+                .FirstOrDefault(bullet =>
+                    bullet.Position.Y + Bullet.Size.Height / 2 > sourcePosition.Y - size.Height / 2
+                    && bullet.Position.Y - Bullet.Size.Height / 2 < sourcePosition.Y + size.Height / 2
+                    && IntersectionController.DistanceBetween(bullet, source) < fieldOfView);
         }
     }
 }

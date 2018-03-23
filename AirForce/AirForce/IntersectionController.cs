@@ -133,5 +133,10 @@ namespace AirForce
             source.HealthPoints = 0;
             target.HealthPoints = 0;
         }
+
+        public static int DistanceBetween(FlyingObject source, FlyingObject target)
+        {
+            return source.Position.DistanceTo(target.Position) - source.Size.Width - target.Size.Width;
+        }
     }
 }

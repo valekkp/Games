@@ -14,7 +14,6 @@ namespace AirForce
 
         private readonly GameController mGameController;
         private readonly Timer mUpdateTimer = new Timer();
-        private readonly PlayerShip mPlayer = PlayerShip.GetInstance();
 
         public GameWindow()
         {
@@ -32,7 +31,7 @@ namespace AirForce
         private void GameField_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
-            mGameController.Update(e.Graphics);
+            mGameController.DrawObjects(e.Graphics);
         }
      
     }

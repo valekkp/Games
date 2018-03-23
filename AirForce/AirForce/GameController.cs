@@ -118,7 +118,7 @@ namespace AirForce
             }
         }
 
-        public void Update(Graphics graphics)
+        public void DrawObjects(Graphics graphics)
         {
             foreach (var flyingObject in FlyingObjects)
             {
