@@ -107,6 +107,11 @@ namespace AirForce
                    && source.Position.DistanceTo(target.Position) < (source.Size.Width / 2 + target.Size.Width / 2);
         }
 
+        public static bool DoesTouchGround(FlyingObject source)
+        {
+            return !(source is Bird) && source.Position.Y + source.Size.Height/2 >= GameController.AirFieldSize.Height;
+        }
+
         public static void ActionOnIntersection(FlyingObject source, FlyingObject target)
         {
             if (source is Bullet || target is Bullet)

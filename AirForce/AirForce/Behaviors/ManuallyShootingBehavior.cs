@@ -20,9 +20,13 @@ namespace AirForce.Behaviors
 
         public bool ReadyToShoot()
         {
-            if (Keyboard.IsKeyUp(Key.Space) && Cooldown > 5)
+            if ((Keyboard.IsKeyUp(Key.Space) 
+                 && Keyboard.IsKeyUp(Key.RightShift))
+                && Cooldown > 5)
                 Cooldown = 5;
-            return Keyboard.IsKeyDown(Key.Space) && Cooldown == 0;
+            return (Keyboard.IsKeyDown(Key.Space) 
+                    || Keyboard.IsKeyDown(Key.RightShift)) 
+                   && Cooldown == 0;
         }
 
         public void Shoot()
