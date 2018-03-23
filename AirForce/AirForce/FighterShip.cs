@@ -11,15 +11,13 @@ namespace AirForce
         public static Size Size = new Size(50, 50);
         public static readonly int Speed = 2;
 
-        private readonly PlayerShip player = PlayerShip.GetInstance();
-
         private readonly Brush mBrush = Brushes.DarkGoldenrod;
         private readonly int mHealthPoints = 3;
         private int mCooldown = 0;
 
-        public FighterShip(Point2D position)
+        public FighterShip(Point2D position, FlyingObject target)
         {
-            Shooter = new ShootingBehavior(this);
+            Shooter = new ShootingBehavior(this, target);
             Mover = new MovingAndDodgingBehavior(this);
             Type = FlyingObjectType.Fighter;
             HorizontalSpeed = -Speed;

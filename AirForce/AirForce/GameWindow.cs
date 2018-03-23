@@ -12,17 +12,15 @@ namespace AirForce
     {
         public static Size GameFieldSize = new Size(700, 500);
 
-        private readonly GameController mGameController;
         private readonly Timer mUpdateTimer = new Timer();
 
         public GameWindow()
         {
             InitializeComponent();
-            mGameController = GameController.GetInstance();
             mUpdateTimer.Interval = 1;
             mUpdateTimer.Tick += (s, e) =>
             {
-                mGameController.UpdateObjects();
+                GameController.UpdateObjects();
                 GameField.Refresh();
             };
             mUpdateTimer.Start();
@@ -31,7 +29,7 @@ namespace AirForce
         private void GameField_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
-            mGameController.DrawObjects(e.Graphics);
+            GameController.DrawObjects(e.Graphics);
         }
      
     }

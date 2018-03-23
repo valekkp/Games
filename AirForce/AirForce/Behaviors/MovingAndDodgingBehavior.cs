@@ -12,6 +12,8 @@ namespace AirForce
         private readonly FlyingObject source;
         private readonly int fieldOfView = 100;
 
+        private List<FlyingObject> flyingObjects;
+
         public MovingAndDodgingBehavior(FlyingObject source)
         {
             this.source = source;
@@ -36,7 +38,6 @@ namespace AirForce
         {
             int verticalSpeed = source.Speed;
             Point2D sourcePosition = source.Position;
-            Size size = source.Size;
 
             FlyingObject bulletToDodge = BulletToDodge();
             if (bulletToDodge != null)
@@ -54,7 +55,7 @@ namespace AirForce
         {
             Size size = source.Size;
             Point2D sourcePosition = source.Position;
-            return GameController.GetInstance().FlyingObjects
+            return GameController.FlyingObjects
                 .Where(x => x is Bullet && (x as Bullet).HorizontalSpeed > 0)
                 .Where(bullet => bullet.Position.X - bullet.Size.Width / 2 < sourcePosition.X + size.Width / 2)
                 .OrderByDescending(x => x.Position.X)

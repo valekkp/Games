@@ -13,9 +13,7 @@ namespace AirForce
         private readonly Brush mBrush = Brushes.DarkOliveGreen;
         private readonly int mHealthPoints = 1000;
 
-        private static PlayerShip instance;
-
-        private PlayerShip()
+        public PlayerShip()
         {
             Mover = new ManuallyMovingBehavior(this);
             Shooter = new ManuallyShootingBehavior(this);
@@ -25,11 +23,6 @@ namespace AirForce
             HorizontalSpeed = 0;
             VerticalSpeed = 0;
             Position = new Point2D(100, GameWindow.GameFieldSize.Height / 2);
-        }
-
-        public static PlayerShip GetInstance()
-        {
-            return instance ?? (instance = new PlayerShip());
         }
 
         public override void Move()

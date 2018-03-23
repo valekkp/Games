@@ -29,8 +29,7 @@ namespace AirForce.Behaviors
         {
             if (ReadyToShoot())
             {
-                GameController.GetInstance()
-                    .Bullets.Add(new Bullet(source));
+                GameController.AddBullet(new Bullet(source), source);
                 Cooldown = 25;
             }
             else if (Cooldown > 0)

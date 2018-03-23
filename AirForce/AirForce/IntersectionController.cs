@@ -10,8 +10,8 @@ namespace AirForce
 {
     public static class IntersectionController
     {
-
         //private static int flyingObjectsTypesCount = Enum.GetNames(typeof(FlyingObjectType)).Length;
+
         public readonly static bool[,] IntersectionTable =
         {
             #region Player

@@ -10,18 +10,20 @@ namespace AirForce
     {
         public int Cooldown { get; set; }
 
-        private readonly FlyingObject flyingObject;
+        private readonly FlyingObject source;
+        private readonly FlyingObject target;
 
-        public ShootingBehavior(FlyingObject flyingObject)
+        public ShootingBehavior(FlyingObject source, FlyingObject target)
         {
-            this.flyingObject = flyingObject;
+            this.source = source;
+            this.target = target;
         }
 
         public void Shoot()
         {
             if (ReadyToShoot())
             {
-                GameController.GetInstance().Bullets.Add(new Bullet(flyingObject));
+                GameController.AddBullet(new Bullet(source), source);
                 Cooldown = 100;
             }
             else if(Cooldown > 0)
@@ -30,8 +32,8 @@ namespace AirForce
 
         public bool ReadyToShoot()
         {
-            return flyingObject.Position.Y < PlayerShip.GetInstance().Position.Y + PlayerShip.Size.Height / 2
-                   && flyingObject.Position.Y > PlayerShip.GetInstance().Position.Y - PlayerShip.Size.Height / 2
+            return source.Position.Y < target.Position.Y + PlayerShip.Size.Height / 2
+                   && source.Position.Y > target.Position.Y - PlayerShip.Size.Height / 2
                    && Cooldown == 0;
         }
     }
