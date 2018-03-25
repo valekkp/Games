@@ -12,11 +12,12 @@ namespace AirForce
         private readonly FlyingObject source;
         private readonly int fieldOfView = 100;
 
-        private List<FlyingObject> flyingObjects;
+        private IEnumerable<FlyingObject> objectsToDodge;
 
-        public MovingAndDodgingBehavior(FlyingObject source)
+        public MovingAndDodgingBehavior(FlyingObject source, IEnumerable<FlyingObject> objectsToDodge)
         {
             this.source = source;
+            this.objectsToDodge = objectsToDodge;
         }
 
         public void Move()
@@ -36,7 +37,7 @@ namespace AirForce
 
         private void Dodge()
         {
-            int verticalSpeed = source.Speed;
+            int verticalSpeed = source.HorizontalSpeed;
             Point2D sourcePosition = source.Position;
 
             FlyingObject bulletToDodge = BulletToDodge();
@@ -55,7 +56,7 @@ namespace AirForce
         {
             Size size = source.Size;
             Point2D sourcePosition = source.Position;
-            return GameController.FlyingObjects
+            return objectsToDodge
                 .Where(x => x is Bullet && (x as Bullet).HorizontalSpeed > 0)
                 .Where(bullet => bullet.Position.X - bullet.Size.Width / 2 < sourcePosition.X + size.Width / 2)
                 .OrderByDescending(x => x.Position.X)

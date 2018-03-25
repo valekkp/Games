@@ -29,15 +29,18 @@ namespace AirForce.Behaviors
                    && Cooldown == 0;
         }
 
-        public void Shoot()
+        public Bullet Shoot()
         {
+            Bullet bullet = null;
             if (ReadyToShoot())
             {
-                GameController.AddBullet(new Bullet(source), source);
+                bullet = new Bullet(source);
                 Cooldown = 25;
             }
             else if (Cooldown > 0)
                 Cooldown -= 1;
+
+            return bullet;
         }
     }
 }

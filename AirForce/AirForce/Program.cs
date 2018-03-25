@@ -16,7 +16,10 @@ namespace AirForce
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new GameWindow());
+            var gameController = new GameController();
+            var gameWindow = new GameWindow(gameController);
+            
+            Application.Run(gameWindow);
         }
     }
 }

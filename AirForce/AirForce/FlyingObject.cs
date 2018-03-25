@@ -11,7 +11,6 @@ namespace AirForce
 
         public Size Size { get; protected set; } 
 
-        public int Speed { get; set; }
         public int HorizontalSpeed { get;  set; }
         public int VerticalSpeed { get; set; }
 
@@ -34,9 +33,9 @@ namespace AirForce
             Mover?.Move();
         }
 
-        public virtual void Shoot()
+        public virtual Bullet Shoot()
         {
-            Shooter?.Shoot();
+            return Shooter?.Shoot();
         }
 
         public virtual void MakeAction()

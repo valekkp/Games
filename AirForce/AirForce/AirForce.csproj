@@ -52,7 +52,7 @@
     <Compile Include="Behaviors\ManuallyShootingBehavior.cs" />
     <Compile Include="Behaviors\MovingRandomlyBehavior.cs" />
     <Compile Include="Bird.cs" />
-    <Compile Include="BulletType.cs" />
+    <Compile Include="GameState.cs" />
     <Compile Include="Interfaces\IShootable.cs" />
     <Compile Include="Behaviors\MovingAndDodgingBehavior.cs" />
     <Compile Include="Behaviors\MovingBehavior.cs" />

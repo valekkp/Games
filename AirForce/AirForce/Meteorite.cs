@@ -27,7 +27,6 @@ namespace AirForce
             Brush = mBrush;
             int diameter = random.Next(70, 111);
             Size = new Size(diameter, diameter);
-            base.Speed = Speed;
             Position = position;
         }
 

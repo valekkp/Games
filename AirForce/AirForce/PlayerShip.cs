@@ -8,7 +8,7 @@ namespace AirForce
     public class PlayerShip : FlyingObject
     {
         public static readonly int Speed = 4;
-        public static Size Size = new Size(50, 50);
+        public new static Size Size = new Size(50, 50);
 
         private readonly Brush mBrush = Brushes.DarkOliveGreen;
         private readonly int mHealthPoints = 1000;

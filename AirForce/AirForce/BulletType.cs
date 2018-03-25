@@ -1,5 +1,0 @@
-﻿enum BulletType
-{
-    PlayerBullet,
-    EnemyBullet
-}

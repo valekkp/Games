@@ -19,15 +19,18 @@ namespace AirForce
             this.target = target;
         }
 
-        public void Shoot()
+        public Bullet Shoot()
         {
+            Bullet bullet = null;
             if (ReadyToShoot())
             {
-                GameController.AddBullet(new Bullet(source), source);
                 Cooldown = 100;
+                bullet =  new Bullet(source);
             }
             else if(Cooldown > 0)
                 Cooldown--;
+
+            return bullet;
         }
 
         public bool ReadyToShoot()

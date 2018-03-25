@@ -11,61 +11,68 @@ using Timer = System.Windows.Forms.Timer;
 
 namespace AirForce
 {
-    static class GameController
+    public class GameController
     {
         public static readonly Size GameFieldSize = GameWindow.GameFieldSize;
         public static readonly Rectangle Ground = new Rectangle(0, GameFieldSize.Height - 100, GameFieldSize.Width, 100);
         public static readonly Size AirFieldSize = new Size(GameFieldSize.Width, GameFieldSize.Height - Ground.Height);
-        public static readonly IEnumerable<FlyingObject> FlyingObjects;
+        public IEnumerable<FlyingObject> FlyingObjects;
+        public GameState CurrentGameState;
+        private int score;
 
-        private static List<FlyingObject> flyingObjects;
-        private static List<Bullet> bulletsToBeAdded;
+        private List<FlyingObject> flyingObjects;
+        private List<Bullet> bulletsToBeAdded;
 
-        private static readonly PlayerShip player;
+        private PlayerShip player;
 
-        private static readonly Timer mUpdateTimer = new Timer();
-        private static readonly Timer mSpawnTimer = new Timer();
+        private readonly Random mRandom = new Random();
+        private int spawnerCooldown;
+        private readonly int spawnerCooldownMax = 100;
 
-        private static readonly Random mRandom = new Random();
-
-        static GameController()
+        public GameController()
         {
-            mSpawnTimer.Interval = 1000;
-            mSpawnTimer.Tick += (s, e) => SpawnObject();
+            StartGame();
+        }
 
+        public void StartGame()
+        {
+            CurrentGameState = GameState.Playing;
             flyingObjects = new List<FlyingObject>();
             bulletsToBeAdded = new List<Bullet>();
-            FlyingObjects = flyingObjects;
-
-            StartGame();
             player = new PlayerShip();
             flyingObjects.Add(player);
+            FlyingObjects = flyingObjects;
+            score = 0;
         }
 
-        private static void StartGame()
+        public void UpdateGameState()
         {
-            
-
-            mUpdateTimer.Start();
-            mSpawnTimer.Start();
+            UpdateObjects();
+            SpawnObjects();
         }
 
-        public static void UpdateObjects()
+        public void UpdateObjects()
         {
-            foreach (var flyingObject in flyingObjects)
+            if (CurrentGameState == GameState.Playing)
             {
-                flyingObject.Move();
-                flyingObject.Shoot();
+                foreach (var flyingObject in flyingObjects)
+                {
+                    flyingObject.Move();
+
+                    var bullet = flyingObject.Shoot();
+                    if(bullet != null)
+                        bulletsToBeAdded.Add(bullet);
+                }
+
+                flyingObjects.AddRange(bulletsToBeAdded);
+                bulletsToBeAdded.Clear();
+                CheckIntersections();
+
+                ClearDeadObjects();
             }
-
-            flyingObjects.AddRange(bulletsToBeAdded);
-            bulletsToBeAdded.Clear();
-            CheckIntersections();
-
-            ClearDeadObjects();
         }
 
-        private static void ClearDeadObjects()
+        private void ClearDeadObjects()
         {
             flyingObjects
                 .RemoveAll(flyingObject => 
@@ -73,9 +80,15 @@ namespace AirForce
                     || flyingObject.Position.X < -flyingObject.Size.Width / 2
                     || flyingObject.Position.X > AirFieldSize.Width + flyingObject.Size.Width / 2
                     || flyingObject.HealthPoints == 0);
+
+            if(FlyingObjects.Any() 
+               && !(FlyingObjects.First() is PlayerShip))
+            {
+                CurrentGameState = GameState.Defeat;
+            }
         }
 
-        private static void CheckIntersections()
+        private void CheckIntersections()
         {
             foreach (var source in flyingObjects)
             {
@@ -87,51 +100,62 @@ namespace AirForce
                     if (IntersectionController.DoCirclesIntersect(source, target))
                     {
                         //DeadObjects.Add(ship);
-                        IntersectionController.ActionOnIntersection(source, target);
+                        IntersectionController.DamageOnIntersection(source, target);
                     }
                 }
             }
             
         }
 
-        private static void SpawnObject()
+        private void SpawnObjects()
         {
-            int randomNumber = mRandom.Next(4, 17);
-            FlyingObject objectToBeAdded = null;
-            switch (randomNumber / 4)
+            if (spawnerCooldown == 0)
             {
-                case (int)FlyingObjectType.Fighter:
-                    objectToBeAdded = new FighterShip(new Point2D(AirFieldSize.Width + FighterShip.Size.Width / 2, FighterShip.Size.Height / 2 + mRandom.Next(AirFieldSize.Height - FighterShip.Size.Height / 2)), player);
-                    break;
-                case (int)FlyingObjectType.Tank:
-                    objectToBeAdded = new TankShip(new Point2D(AirFieldSize.Width + TankShip.Size.Width / 2, TankShip.Size.Height / 2 + mRandom.Next(0, AirFieldSize.Height - TankShip.Size.Height / 2)));
-                    break;
-                case (int)FlyingObjectType.Bird:
-                    objectToBeAdded = new Bird(new Point2D(AirFieldSize.Width + Bird.Size.Width / 2, Bird.Size.Height / 2 + mRandom.Next(2*AirFieldSize.Height/3, AirFieldSize.Height - Bird.Size.Height / 2)));
-                    break;
-                case (int)FlyingObjectType.Meteorite:
-                    objectToBeAdded = new Meteorite(new Point2D(mRandom.Next(100, AirFieldSize.Width), -100));
-                    break;
-                
+                spawnerCooldown = spawnerCooldownMax;
+                int randomNumber = mRandom.Next(4, 17);
+                FlyingObject objectToBeAdded = null;
+                switch (randomNumber / 4)
+                {
+                    case (int) FlyingObjectType.Fighter:
+                        objectToBeAdded =
+                            new FighterShip(
+                                new Point2D(AirFieldSize.Width + FighterShip.Size.Width / 2,
+                                    FighterShip.Size.Height / 2 +
+                                    mRandom.Next(AirFieldSize.Height - FighterShip.Size.Height / 2)),
+                                player,
+                                FlyingObjects);
+                        break;
+                    case (int) FlyingObjectType.Tank:
+                        objectToBeAdded = new TankShip(new Point2D(AirFieldSize.Width + TankShip.Size.Width / 2,
+                            TankShip.Size.Height / 2 +
+                            mRandom.Next(0, AirFieldSize.Height - TankShip.Size.Height / 2)));
+                        break;
+                    case (int) FlyingObjectType.Bird:
+                        objectToBeAdded = new Bird(new Point2D(AirFieldSize.Width + Bird.Size.Width / 2,
+                            Bird.Size.Height / 2 + mRandom.Next(2 * AirFieldSize.Height / 3,
+                                AirFieldSize.Height - Bird.Size.Height / 2)));
+                        break;
+                    case (int) FlyingObjectType.Meteorite:
+                        objectToBeAdded = new Meteorite(new Point2D(mRandom.Next(100, AirFieldSize.Width), -100));
+                        break;
+
+                }
+
+                flyingObjects.Add(objectToBeAdded);
             }
-            
-            flyingObjects.Add(objectToBeAdded);
+            else if (spawnerCooldown > 0)
+                spawnerCooldown--;
+
         }
 
-        public static void DrawObjects(Graphics graphics)
+        public void DrawObjects(Graphics graphics)
         {
+            graphics.FillRectangle(Brushes.DarkGreen, Ground);
+
             foreach (var flyingObject in flyingObjects)
             {
                 flyingObject.Draw(graphics);
             }
-
-            graphics.FillRectangle(Brushes.DarkGreen, Ground);
         }
-
-        public static void AddBullet(Bullet bulletToAdd, FlyingObject source)
-        {
-            bulletsToBeAdded.Add(bulletToAdd);
-        }
-
     }
 }

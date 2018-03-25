@@ -12,25 +12,52 @@ namespace AirForce
     {
         public static Size GameFieldSize = new Size(700, 500);
 
-        private readonly Timer mUpdateTimer = new Timer();
+        private readonly Timer mTimer = new Timer();
+        private readonly GameController gameController;
 
         public GameWindow()
         {
             InitializeComponent();
-            mUpdateTimer.Interval = 1;
-            mUpdateTimer.Tick += (s, e) =>
+        }
+
+        public GameWindow(GameController gameController)
+        {
+            this.gameController = gameController;
+            InitializeComponent();
+            mTimer.Interval = 1;
+            mTimer.Tick += (s, e) =>
             {
-                GameController.UpdateObjects();
+                gameController.UpdateGameState();
                 GameField.Refresh();
             };
-            mUpdateTimer.Start();
+            gameController.StartGame();
+            mTimer.Start();
         }
 
         private void GameField_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
-            GameController.DrawObjects(e.Graphics);
+            switch (gameController.CurrentGameState)
+            {
+                case GameState.Playing:
+                    e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+                    gameController.DrawObjects(e.Graphics);
+                    break;
+                case GameState.Defeat:
+                    e.Graphics.DrawString("Defeat! Press Enter to restart.", 
+                        new Font(FontFamily.GenericSansSerif, 20, FontStyle.Regular), 
+                        Brushes.Black, 
+                        new Point(GameFieldSize.Width/2 - 100, GameFieldSize.Height/2 - 100));
+                    break;
+            }
         }
-     
+
+        private void GameWindow_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (gameController.CurrentGameState == GameState.Defeat
+                && e.KeyCode == Keys.Enter)
+            {
+                gameController.StartGame();
+            }
+        }
     }
 }

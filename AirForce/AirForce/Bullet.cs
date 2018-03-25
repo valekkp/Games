@@ -1,12 +1,10 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
+﻿using System.Drawing;
 
 namespace AirForce
 {
     public class Bullet : FlyingObject
     {
-        public static readonly Size Size = new Size(10, 10);
+        public new static readonly Size Size = new Size(10, 10);
         public static readonly int Speed = 5;
 
         private readonly Brush mEnemyBrush = Brushes.Firebrick;
@@ -21,7 +19,6 @@ namespace AirForce
             Type = source is PlayerShip ? FlyingObjectType.PlayerBullet : FlyingObjectType.EnemyBullet;
             HealthPoints = mHealthPoints;
             base.Size = Size;
-            base.Speed = Speed;
             Brush = source is PlayerShip ? mPlayerBrush : mEnemyBrush;
             Position = source is PlayerShip
                 ? new Point2D(source.Position.X + source.Size.Width / 2 + Size.Width / 2, source.Position.Y)

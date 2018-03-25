@@ -12,6 +12,6 @@ namespace AirForce
 
         bool ReadyToShoot();
 
-        void Shoot();
+        Bullet Shoot();
     }
 }

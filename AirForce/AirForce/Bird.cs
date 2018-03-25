@@ -11,7 +11,7 @@ namespace AirForce
     class Bird : FlyingObject
     {
         public static Size Size = new Size(20, 20);
-        public static readonly int Speed = 1;
+        public static int Speed = 1;
 
         private readonly Brush mBrush = Brushes.OrangeRed;
         private readonly int mHealthPoints = 1;
@@ -25,7 +25,6 @@ namespace AirForce
             HealthPoints = mHealthPoints;
             Brush = mBrush;
             base.Size = Size;
-            base.Speed = Speed;
             Position = position;
         }
 

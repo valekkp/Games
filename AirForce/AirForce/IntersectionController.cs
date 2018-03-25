@@ -112,8 +112,10 @@ namespace AirForce
             return !(source is Bird) && source.Position.Y + source.Size.Height/2 >= GameController.AirFieldSize.Height;
         }
 
-        public static void ActionOnIntersection(FlyingObject source, FlyingObject target)
+        public static void DamageOnIntersection(FlyingObject source, FlyingObject target)
         {
+            if (!DoCirclesIntersect(source, target)) return;
+
             if (source is Bullet || target is Bullet)
             {
                 source.HealthPoints -= 1;
