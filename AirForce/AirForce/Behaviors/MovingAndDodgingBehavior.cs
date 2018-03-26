@@ -29,6 +29,7 @@ namespace AirForce
 
             source.Position.X += horizontalSpeed;
             source.Position.Y += verticalSpeed;
+
             if (source.Position.Y - size.Height / 2 < 0)
                 source.Position.Y = size.Height / 2;
             if (source.Position.Y + size.Height / 2 > GameWindow.GameFieldSize.Height)
@@ -37,7 +38,7 @@ namespace AirForce
 
         private void Dodge()
         {
-            int verticalSpeed = source.HorizontalSpeed;
+            int verticalSpeed = FighterShip.Speed;
             Point2D sourcePosition = source.Position;
 
             FlyingObject bulletToDodge = BulletToDodge();
@@ -57,8 +58,9 @@ namespace AirForce
             Size size = source.Size;
             Point2D sourcePosition = source.Position;
             return objectsToDodge
-                .Where(x => x is Bullet && (x as Bullet).HorizontalSpeed > 0)
-                .Where(bullet => bullet.Position.X - bullet.Size.Width / 2 < sourcePosition.X + size.Width / 2)
+                .OfType<Bullet>()
+                .Where(bullet => bullet.HorizontalSpeed > 0
+                                 && bullet.Position.X - Bullet.Size.Width / 2 < sourcePosition.X + size.Width / 2)
                 .OrderByDescending(x => x.Position.X)
                 .FirstOrDefault(bullet =>
                     bullet.Position.Y + Bullet.Size.Height / 2 > sourcePosition.Y - size.Height / 2

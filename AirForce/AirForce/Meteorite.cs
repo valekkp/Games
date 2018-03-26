@@ -10,7 +10,7 @@ namespace AirForce
     class Meteorite : FlyingObject
     {
         //public static readonly Size Size = new Size(100, 100);
-        public static readonly int Speed = 2;
+        public const int Speed = 2;
 
         private readonly Brush mBrush = Brushes.PaleVioletRed;
         private readonly int mHealthPoints = 10;

@@ -5,7 +5,7 @@ namespace AirForce
     public class Bullet : FlyingObject
     {
         public new static readonly Size Size = new Size(10, 10);
-        public static readonly int Speed = 5;
+        public const int Speed = 5;
 
         private readonly Brush mEnemyBrush = Brushes.Firebrick;
         private readonly Brush mPlayerBrush = Brushes.DarkBlue;

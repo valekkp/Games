@@ -9,7 +9,7 @@ namespace AirForce
     public class FighterShip : FlyingObject
     {
         public new static Size Size = new Size(50, 50);
-        public static readonly int Speed = 2;
+        public const int Speed = 2;
 
         private readonly Brush mBrush = Brushes.DarkGoldenrod;
         private readonly int mHealthPoints = 3;

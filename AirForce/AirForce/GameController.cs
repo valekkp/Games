@@ -114,9 +114,9 @@ namespace AirForce
                 spawnerCooldown = spawnerCooldownMax;
                 int randomNumber = mRandom.Next(4, 17);
                 FlyingObject objectToBeAdded = null;
-                switch (randomNumber / 4)
+                switch ((FlyingObjectType)(randomNumber / 4))
                 {
-                    case (int) FlyingObjectType.Fighter:
+                    case FlyingObjectType.Fighter:
                         objectToBeAdded =
                             new FighterShip(
                                 new Point2D(AirFieldSize.Width + FighterShip.Size.Width / 2,
@@ -125,17 +125,17 @@ namespace AirForce
                                 player,
                                 FlyingObjects);
                         break;
-                    case (int) FlyingObjectType.Tank:
+                    case FlyingObjectType.Tank:
                         objectToBeAdded = new TankShip(new Point2D(AirFieldSize.Width + TankShip.Size.Width / 2,
                             TankShip.Size.Height / 2 +
                             mRandom.Next(0, AirFieldSize.Height - TankShip.Size.Height / 2)));
                         break;
-                    case (int) FlyingObjectType.Bird:
+                    case FlyingObjectType.Bird:
                         objectToBeAdded = new Bird(new Point2D(AirFieldSize.Width + Bird.Size.Width / 2,
                             Bird.Size.Height / 2 + mRandom.Next(2 * AirFieldSize.Height / 3,
                                 AirFieldSize.Height - Bird.Size.Height / 2)));
                         break;
-                    case (int) FlyingObjectType.Meteorite:
+                    case FlyingObjectType.Meteorite:
                         objectToBeAdded = new Meteorite(new Point2D(mRandom.Next(100, AirFieldSize.Width), -100));
                         break;
 
