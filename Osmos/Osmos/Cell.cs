@@ -23,11 +23,8 @@ namespace Osmos
             {
                 var oldValue = mMass;
                 mMass = value;
-                var difference = oldValue - mMass;
-                var discriminant = Math.Pow(2 * Math.PI * Radius, 2) - 4 * difference * Math.PI;
-                var x1 = (float)((2 * Math.PI * Radius + Math.Sqrt(discriminant)) / (2 * Math.PI));
-                var x2 = (float)((2 * Math.PI * Radius - Math.Sqrt(discriminant)) / (2 * Math.PI));
-                Radius -= x1 > 0 ? x1 : x2;
+
+                Radius = (float) Math.Sqrt(mMass / Math.PI);
             }
         }
 
@@ -44,7 +41,6 @@ namespace Osmos
             }
         }
         public Point2D MovementVector;
-        public Point2D ImpulseVector;
 
         public Brush Color = Brushes.Chartreuse;
 
@@ -58,15 +54,16 @@ namespace Osmos
         public Cell(Point2D position, float mass, Point2D movementVector)
         {
             mover = new MovingBehavior(this);
-            Position = position;
             Mass = mass;
+            Position = position;
             MovementVector = movementVector;
         }
 
         public virtual void Draw(Graphics graphics)
         {
-            graphics.FillEllipse(Color, Position.X % GameWindow.GameFieldSize.Width, Position.Y % GameWindow.GameFieldSize.Height, Radius, Radius);
-            graphics.DrawEllipse(ColorWhenSmaller, Position.X % GameWindow.GameFieldSize.Width, Position.Y % GameWindow.GameFieldSize.Width, Radius, Radius);
+            graphics.FillEllipse(Color, (Position.X - Radius) % GameWindow.GameFieldSize.Width, (Position.Y - Radius) % GameWindow.GameFieldSize.Height, Radius * 2, Radius * 2);
+            graphics.DrawEllipse(ColorWhenSmaller, (Position.X - Radius) % GameWindow.GameFieldSize.Width, (Position.Y - Radius) % GameWindow.GameFieldSize.Width, Radius * 2, Radius * 2);
+            graphics.FillEllipse(Brushes.Red, Position.X - 1, Position.Y - 1, 2f, 2f);
         }
     }
 }

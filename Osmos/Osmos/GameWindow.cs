@@ -31,6 +31,12 @@ namespace Osmos
 
         private void GameField_MouseDown(object sender, MouseEventArgs e)
         {
+            if (e.Button == MouseButtons.Right)
+            {
+                GameController.StopPlayer();
+                return;
+            }
+
             GameController.MovePlayer(new Point2D(e.X, e.Y));
         }
 

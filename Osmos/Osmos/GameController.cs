@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Osmos
 {
@@ -27,27 +28,37 @@ namespace Osmos
         public static void MovePlayer(Point2D clickPosition)
         {
             var distance = Point2D.DistanceBetween(player.Position, clickPosition);
-            var motionRadius = 1;
 
-            if (distance > motionRadius)
-            {
-                float lambda = (float)((distance - motionRadius) / Math.Pow(distance, 2));
-                var xSpeed = (player.Position.X + lambda * clickPosition.X) / (1 + lambda);
-                var ySpeed = (player.Position.Y + lambda * clickPosition.Y) / (1 + lambda);
-                var maxValue = Math.Abs(Math.Max(xSpeed, ySpeed));
-                xSpeed /= maxValue;
-                ySpeed /= maxValue;
-                player.MovementVector.X += clickPosition.X > player.Position.X ? -xSpeed : xSpeed;
-                player.MovementVector.Y += clickPosition.Y > player.Position.Y ? -ySpeed : ySpeed;
-            }
+            
+            var xDifference = clickPosition.X - player.Position.X;
+            var yDifference = clickPosition.Y - player.Position.Y;
 
-            //player.Mass -= 100;
-            //var cellPosition = new Point2D();
-            //cells.Add(new NeutralCell(new Point2D(player.Position.X - (player.MovementVector.X + player.MovementVector.X > 0 ? 10 : - 10),
-            //        player.Position.Y -(player.MovementVector.Y + player.MovementVector.Y > 0 ? 10 : -10)),
-            //    1000,
-            //    new Point2D(-player.MovementVector.X, -player.MovementVector.Y)));
+            var ratio = Math.Min(xDifference, yDifference) / Math.Max(xDifference, yDifference);
+
+            float lambda = (float)(distance / Math.Pow(distance, 2));
+            var xOnCircle = (player.Position.X + lambda * clickPosition.X) / (1 + lambda);
+            var yOnCircle = (player.Position.Y + lambda * clickPosition.Y) / (1 + lambda);
+            var xSpeed = player.Position.X - xOnCircle;
+            var ySpeed = player.Position.Y - yOnCircle;
+
+            player.MovementVector.X += xSpeed;
+            player.MovementVector.Y += ySpeed;
+            
+
+            var cellMass = player.Mass / 10;
+            player.Mass -= cellMass;
+            var cellPosition = new Point2D();
+            cells.Add(new NeutralCell(new Point2D(player.Position.X - xSpeed,
+                    player.Position.Y - ySpeed),
+                cellMass,
+                new Point2D(-xSpeed, -ySpeed)));
         }
+
+        public static void StopPlayer()
+        {
+            player.MovementVector = new Point2D();
+        }
+        
 
         public static void Update(Graphics graphics)
         {
