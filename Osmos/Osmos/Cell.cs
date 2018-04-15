@@ -49,6 +49,17 @@ namespace Osmos
         public virtual void Move()
         {
             mover.Move();
+            if (Position.X - Radius <= 0
+                || Position.X + Radius >= GameWindow.GameFieldSize.Width)
+            {
+                ReverseMovementByX();
+            }
+
+            if (Position.Y - Radius <= 0
+                || Position.Y + Radius >= GameWindow.GameFieldSize.Height)
+            {
+                ReverseMovementByY();
+            }
         }
 
         public Cell(Point2D position, float mass, Point2D movementVector)
@@ -61,9 +72,19 @@ namespace Osmos
 
         public virtual void Draw(Graphics graphics)
         {
-            graphics.FillEllipse(Color, (Position.X - Radius) % GameWindow.GameFieldSize.Width, (Position.Y - Radius) % GameWindow.GameFieldSize.Height, Radius * 2, Radius * 2);
-            graphics.DrawEllipse(ColorWhenSmaller, (Position.X - Radius) % GameWindow.GameFieldSize.Width, (Position.Y - Radius) % GameWindow.GameFieldSize.Width, Radius * 2, Radius * 2);
-            graphics.FillEllipse(Brushes.Red, Position.X - 1, Position.Y - 1, 2f, 2f);
+            graphics.FillEllipse(Color, Position.X - Radius, Position.Y - Radius, Radius * 2, Radius * 2);
+            graphics.DrawEllipse(ColorWhenSmaller, Position.X - Radius, Position.Y - Radius, Radius * 2, Radius * 2);
+            //graphics.FillEllipse(Brushes.Red, Position.X - 1, Position.Y - 1, 2f, 2f);
+        }
+
+        public void ReverseMovementByX()
+        {
+            MovementVector = new Point2D(-MovementVector.X, MovementVector.Y);
+        }
+
+        public void ReverseMovementByY()
+        {
+            MovementVector = new Point2D(MovementVector.X, -MovementVector.Y);
         }
     }
 }

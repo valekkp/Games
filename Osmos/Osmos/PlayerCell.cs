@@ -11,12 +11,7 @@ namespace Osmos
         public PlayerCell(Point2D position, float mass, Point2D movementVector)
             : base(position, mass, movementVector)
         {
-
-        }
-
-        public override void Move()
-        {
-            base.Move();
+            mover = new MovingBehavior(this);
         }
     }
 }

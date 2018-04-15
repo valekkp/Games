@@ -29,20 +29,27 @@ namespace Osmos
             GameController.Start();
         }
 
+        public static Point2D GameFieldCursorPosition { get; private set; }
+
         private void GameField_MouseDown(object sender, MouseEventArgs e)
         {
+            GameFieldCursorPosition = new Point2D(e.X, e.Y);
             if (e.Button == MouseButtons.Right)
             {
                 GameController.StopPlayer();
                 return;
             }
-
-            GameController.MovePlayer(new Point2D(e.X, e.Y));
+            if (e.Button == MouseButtons.Left)
+            {
+                GameController.PushCell();
+                return;
+            }
         }
 
         private void GameField_Paint(object sender, PaintEventArgs e)
         {
             GameController.Update(e.Graphics);
+            //e.Graphics.DrawRectangle(Pens.Black, 0, 0, GameFieldSize.Width + 6, GameFieldSize.Height + 2);
         }
     }
 }

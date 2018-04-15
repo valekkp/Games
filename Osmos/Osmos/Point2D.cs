@@ -27,5 +27,10 @@ namespace Osmos
         {
             return new Point2D(source.X + target.X, source.Y + target.Y);
         }
+
+        public static Point2D operator -(Point2D source, Point2D target)
+        {
+            return new Point2D(source.X - target.X, source.Y - target.Y);
+        }
     }
 }
