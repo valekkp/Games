@@ -29,7 +29,8 @@ namespace Osmos
         }
 
         private Point2D mPosition;
-        public Point2D Position {
+        public Point2D Position
+        {
             get { return mPosition; }
             set
             {
@@ -42,7 +43,8 @@ namespace Osmos
         }
         public Point2D MovementVector;
 
-        public Brush Color = Brushes.Chartreuse;
+        private Brush Color = Brushes.Chartreuse;
+        public Pen OuterColor = ColorWhenSmaller;
 
         protected IMovable mover;
 
@@ -73,16 +75,16 @@ namespace Osmos
         public virtual void Draw(Graphics graphics)
         {
             graphics.FillEllipse(Color, Position.X - Radius, Position.Y - Radius, Radius * 2, Radius * 2);
-            graphics.DrawEllipse(ColorWhenSmaller, Position.X - Radius, Position.Y - Radius, Radius * 2, Radius * 2);
+            graphics.DrawEllipse(OuterColor, Position.X - Radius, Position.Y - Radius, Radius * 2, Radius * 2);
             //graphics.FillEllipse(Brushes.Red, Position.X - 1, Position.Y - 1, 2f, 2f);
         }
 
-        public void ReverseMovementByX()
+        private void ReverseMovementByX()
         {
             MovementVector = new Point2D(-MovementVector.X, MovementVector.Y);
         }
 
-        public void ReverseMovementByY()
+        private void ReverseMovementByY()
         {
             MovementVector = new Point2D(MovementVector.X, -MovementVector.Y);
         }

@@ -55,6 +55,7 @@
     </Compile>
     <Compile Include="Cell.cs" />
     <Compile Include="IMovable.cs" />
+    <Compile Include="IntersectionController.cs" />
     <Compile Include="ManuallyMovingBehaviour.cs" />
     <Compile Include="MovingBehavior.cs" />
     <Compile Include="NeutralCell.cs" />

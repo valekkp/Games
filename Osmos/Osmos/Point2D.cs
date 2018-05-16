@@ -18,9 +18,9 @@ namespace Osmos
             Y = y;
         }
 
-        public static double DistanceBetween(Point2D source, Point2D target)
+        public static float DistanceBetween(Point2D source, Point2D target)
         {
-            return Math.Sqrt(Math.Pow(source.X - target.X, 2) + Math.Pow(source.Y - target.Y, 2));
+            return (float) Math.Sqrt(Math.Pow(source.X - target.X, 2) + Math.Pow(source.Y - target.Y, 2));
         }
 
         public static Point2D operator +(Point2D source, Point2D target)
@@ -31,6 +31,11 @@ namespace Osmos
         public static Point2D operator -(Point2D source, Point2D target)
         {
             return new Point2D(source.X - target.X, source.Y - target.Y);
+        }
+
+        public static Point2D operator *(Point2D source, float multiplier)
+        {
+            return new Point2D(source.X * multiplier, source.Y * multiplier);
         }
     }
 }

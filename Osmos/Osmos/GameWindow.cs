@@ -12,7 +12,7 @@ namespace Osmos
 {
     public partial class GameWindow : Form
     {
-        public static Size GameFieldSize = new Size(700, 500);
+        public static Size GameFieldSize = new Size(700, 400);
 
         private Timer gameTimer = new Timer();
 
@@ -50,6 +50,21 @@ namespace Osmos
         {
             GameController.Update(e.Graphics);
             //e.Graphics.DrawRectangle(Pens.Black, 0, 0, GameFieldSize.Width + 6, GameFieldSize.Height + 2);
+        }
+
+        private void GameWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.S)
+            {
+                if(gameTimer.Enabled) gameTimer.Stop();
+                GameField.Refresh();
+            }
+
+            if (e.KeyCode == Keys.F)
+            {
+                if(!gameTimer.Enabled)
+                    gameTimer.Start();
+            }
         }
     }
 }

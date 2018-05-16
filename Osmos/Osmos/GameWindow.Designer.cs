@@ -50,6 +50,7 @@
             this.Controls.Add(this.GameField);
             this.Name = "GameWindow";
             this.Text = "Form1";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GameWindow_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.GameField)).EndInit();
             this.ResumeLayout(false);
 
